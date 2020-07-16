@@ -307,12 +307,13 @@ export class ParceladoPreComponent implements OnInit {
   }
 
   adicionarAmortizacao(amortizacaoTable) {
-    this.tableDataAmortizacao.dataRows = amortizacaoTable;
+    this.tableDataAmortizacao.dataRows = amortizacaoTable
 
     const DIFERENCIADA = amortizacaoTable.filter(amortizacao => amortizacao.tipo === AMORTIZACAO_DATA_DIFERENCIADA);
     const DATA_CALCULO = amortizacaoTable.filter(amortizacao => amortizacao.tipo === AMORTIZACAO_DATA_ATUAL);
     const FINAL = amortizacaoTable.filter(amortizacao => amortizacao.tipo === AMORTIZACAO_DATA_FINAL);
-    const TABLEDATA = this.tableData.dataRows;
+
+    const TABLEDATA = this.tableData.dataRows.filter(row => !row['amortizacaoDataDiferenciada']);
     let valor = 0;
 
     if (DATA_CALCULO.length) {
@@ -362,20 +363,20 @@ export class ParceladoPreComponent implements OnInit {
       let indexNewParcela = 0;
       TABLEDATA.map((row, key) => {
         row['isAmortizado'] = false;
-        
-        if (row['status'] === PARCELA_ABERTA && !row['amortizacaoDataDiferenciada']) {
+
+        if (row['status'] === PARCELA_ABERTA && !row['amortizacaoDataDiferenciada'] && valor > 0) {
           DIFERENCIADA.map((amortizacao, index) => {
             if (valor <= 0) {
               return;
             }
 
-            const subtotal = row['subtotal'];
+            const subtotal = parseFloat(row['subtotal']);
             //let valorPago = parseFloat(amortizacao.saldo_devedor);
             const qtdDias = getQtdDias(formatDate(row['dataCalcAmor']), formatDate(amortizacao['data_vencimento']));
             let add = false;
 
             switch (true) {
-              case (row['totalDevedor'] == valor):
+              case (subtotal == valor):
                 row['amortizacao'] = subtotal;
                 row['status'] = PARCELA_PAGA;
                 row['isAmortizado'] = true;
@@ -395,14 +396,31 @@ export class ParceladoPreComponent implements OnInit {
                 indexNewParcela++;
 
                 break;
-              case (subtotal> valor && valor > 0):
+              case (subtotal > valor && valor > 0):
                 row['status'] = PARCELA_ABERTA;
-                row['amortizacao'] = valor;
-                row['totalDevedor'] = 0;
                 row['isAmortizado'] = true;
 
-                valor -= subtotal
-                add = true;
+                add = false;
+
+                for (let amor = index; amor < DIFERENCIADA.length; amor++) {
+                  TABLEDATA[indexNewParcela]['amortizacao'] = DIFERENCIADA[amor]['saldo_devedor'];
+
+                  const newParcela = {
+                    ...row,
+                    nparcelas: `${TABLEDATA[key]['nparcelas']}.${amor + 1}`,
+                    amortizacao: 0,
+                    dataCalcAmor: DIFERENCIADA[amor]['data_vencimento'],
+                    dataVencimento: TABLEDATA[indexNewParcela]['dataCalcAmor'],
+                    encargosMonetarios: { ...TABLEDATA[indexNewParcela]['encargosMonetarios'], jurosAm: { ...TABLEDATA[indexNewParcela]['encargosMonetarios']['jurosAm'], dias: qtdDias } },
+                    amortizacaoDataDiferenciada: true,
+                    status: PARCELA_ABERTA
+                  };
+
+                  valor -= DIFERENCIADA[amor]['saldo_devedor']
+                  TABLEDATA.splice(++indexNewParcela, 0, newParcela);
+                  this.simularCalc(true)
+                }
+
                 break;
             }
 
@@ -440,6 +458,7 @@ export class ParceladoPreComponent implements OnInit {
         mensagem: 'Amortização incluida!',
         tipo: 'success'
       };
+      this.tableData.dataRows = TABLEDATA
       this.toggleUpdateLoading()
       this.simularCalc(true)
     }, 500)
@@ -610,6 +629,8 @@ export class ParceladoPreComponent implements OnInit {
         parcela.encargosMonetarios = JSON.parse(parcela.encargosMonetarios)
         parcela.infoParaCalculo = JSON.parse(parcela.infoParaCalculo)
         parcela.infoParaAmortizacao = JSON.parse(parcela.infoParaAmortizacao)
+        parcela['amortizacaoDataDiferenciada'] = false;
+
         setTimeout(() => {
           this.tableDataAmortizacao = parcela.infoParaAmortizacao ? parcela.infoParaAmortizacao : this.tableDataAmortizacao
         }, 100);
@@ -719,6 +740,14 @@ export class ParceladoPreComponent implements OnInit {
 
         setTimeout(() => {
           // Valores brutos
+
+          //ao adc uma amortizacao diferenciada, a parcela anterior deve ser desconsiderada e gerado uma nova parcela
+          if (row['amortizacaoDataDiferenciada']) {
+            const rowAnterior = this.tableData.dataRows[key - 1];
+            rowAnterior['totalDevedor'] = 0
+            row['valorNoVencimento'] = parseFloat(rowAnterior['subtotal']) - parseFloat(rowAnterior['amortizacao']);
+          }
+
           const dataVencimento = formatDate(row["dataVencimento"]);
           const dataCalcAmor = formatDate(row["dataCalcAmor"]);
 
