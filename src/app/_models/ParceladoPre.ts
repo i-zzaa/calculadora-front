@@ -1,6 +1,6 @@
 export interface Parcela {
     id?: number;
-    nparcelas: number;
+    nparcelas: string;
     parcelaInicial:number; 
     dataVencimento: string;
     indiceDV: string;
@@ -11,7 +11,7 @@ export interface Parcela {
     valorNoVencimento: number;
     encargosMonetarios: any;
     subtotal: number;
-    valorPMTVincenda: string;
+    valorPMTVincenda: number;
     amortizacao: number;
     totalDevedor: number;
     status: string;

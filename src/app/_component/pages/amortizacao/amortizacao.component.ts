@@ -45,12 +45,11 @@ export class AmortizacaoComponent implements OnInit {
     this.dtOptionsAmortizacao = {
       paging: false,
       searching: false,
-      ordering: false,
+      ordering: true,
       scrollY: '300px',
       scrollCollapse: true,
       language: LANGUAGEM_TABLE
     }
-
   }
 
   formatCurrency(value) {
@@ -83,7 +82,6 @@ export class AmortizacaoComponent implements OnInit {
     }
 
     this.tableDataAmortizacao.dataRows.push(this.preFormAmortizacao.value);
-
     this.incluirAmortizacao.emit(this.tableDataAmortizacao.dataRows)
     this.preFormAmortizacao.reset();
 

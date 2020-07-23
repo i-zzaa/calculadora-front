@@ -272,11 +272,10 @@ export class ChequeEmpresarialComponent implements OnInit {
 
   incluirLancamentos() {
 
-    const lastLine = getLastLine(this.tableData.dataRows);
-
+    const lastLine = getLastLine(this.tableData.dataRows) || {};
     const isTipoLancamento = this.ce_form_amortizacao.ceFA_tipo.value === 'lancamento';
 
-    if ((!this.form_riscos.formIndice && isTipoLancamento) || !Object.keys(lastLine).length) {
+    if ((this.form_riscos.formIndice === undefined && isTipoLancamento) || (!Object.keys(lastLine).length && !isTipoLancamento)) {
       this.updateLoadingBtn = true;
       this.alertType = {
         mensagem: 'É necessário informar o índice.',
@@ -353,7 +352,7 @@ export class ChequeEmpresarialComponent implements OnInit {
       this.tableData.dataRows.push(this.payloadLancamento)
       this.tableLoading = false;
 
-      if (!this.lancamentoInfo() && isTipoLancamento && !lastLine['isTipoLancamento']) {
+      if (!this.lancamentoInfo() && isTipoLancamento && (Object.keys(lastLine).length && !lastLine['isTipoLancamento'])) {
         this.tableData.dataRows.push(lastLine);
       }
 

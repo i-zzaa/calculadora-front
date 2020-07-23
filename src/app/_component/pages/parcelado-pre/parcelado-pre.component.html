@@ -72,62 +72,63 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let row of tableData.dataRows" class="parcelado-font-size" align="center" [parcelaPaga]="row.status">
-                                    <td [vincendas]="row"> {{row.nparcelas}} </td>
-                                    <td [vincendas]="row">
-                                        <input type="date" [vincendas]="row" [parcelaPaga]="row.status" [disabled]="row.status === 'Pago'" class=" parcelado-font-size form-control col-md-11 col-sm-12 log-hidden-false" name="pre_dataVencimento" id="pre_dataCalcAmor" [value]="row.dataVencimento"
+                                <tr *ngFor="let row of tableData.dataRows" class="parcelado-font-size" align="center" [parcelaPaga]="row.status" [vincendas]="row.vincenda ? true : null">
+                                    <td> {{row.nparcelas}} </td>
+                                    <td>
+                                        <input type="date" [vincendas]="row.vincenda ? true : null" [disabled]="row.status === 'Pago'" class=" parcelado-font-size form-control col-md-11 col-sm-12 log-hidden-false" name="pre_dataVencimento" id="pre_dataCalcAmor" [value]="row.dataVencimento"
                                             (blur)="changeDate($event, row, 'dataVencimento', 'indiceDV', 'indiceDataVencimento')">
                                         <span class="log-visible-false">{{formatDate(row.dataVencimento)}}</span>
                                     </td>
-                                    <td width="80" [vincendas]="row">
-                                        <select [vincendas]="row" [parcelaPaga]="row.status" [disabled]="row.status === 'Pago'" class="parcelado-font-size form-control custom-select log-hidden-false" name="pre_indiceDV" id="pre_indiceDV" (change)="updateInlineIndice($event.target.value, row, 'indiceDataVencimento', 'indiceDV', 'dataVencimento')">
+                                    <td width="80">
+                                        <select [vincendas]="row.vincenda ? true : null" [disabled]="row.status === 'Pago'" class="parcelado-font-size form-control custom-select log-hidden-false" name="pre_indiceDV" id="pre_indiceDV" (change)="updateInlineIndice($event.target.value, row, 'indiceDataVencimento', 'indiceDV', 'dataVencimento')">
 											<option *ngFor="let indice of indice_field" [value]="indice"
 												[selected]="indice === row.indiceDV"> {{indice}}</option>
 										</select>
                                         <span class="log-visible-false">{{row.indiceDV}}</span>
 
                                     </td>
-                                    <td [vincendas]="row">
+                                    <td>
                                         {{row.indiceDataVencimento || "---"}}
                                     </td>
-                                    <td width="120" [vincendas]="row">
-                                        <input [vincendas]="row" type="date" [disabled]="row.status === 'Pago'" class="parcelado-font-size form-control col-md-11 col-sm-12 log-hidden-false" name="pre_dataCalcAmor" id="pre_dataCalcAmor" max="3000-12-31" [value]="row.dataCalcAmor" (blur)="changeDate($event, row, 'dataCalcAmor', 'indiceDCA', 'indiceDataCalcAmor')">
+                                    <td width="120">
+                                        <input type="date" [vincendas]="row.vincenda ? true : null" [disabled]="row.status === 'Pago'" class="parcelado-font-size form-control col-md-11 col-sm-12 log-hidden-false" name="pre_dataCalcAmor" id="pre_dataCalcAmor" max="3000-12-31" [value]="row.dataCalcAmor"
+                                            (blur)="changeDate($event, row, 'dataCalcAmor', 'indiceDCA', 'indiceDataCalcAmor')">
                                         <span class="log-visible-false">{{formatDate(row.dataCalcAmor)}}</span>
 
                                     </td>
-                                    <td width="80" [vincendas]="row">
-                                        <select [vincendas]="row" [parcelaPaga]="row.status" [disabled]="row.status === 'Pago'" class="parcelado-font-size form-control custom-select log-hidden-false" name="pre_indice" id="pre_indice" (change)="updateInlineIndice($event.target.value, row, 'indiceDataCalcAmor', 'indiceDCA', 'dataCalcAmor')">
+                                    <td width="80">
+                                        <select [vincendas]="row.vincenda ? true : null" [disabled]="row.status === 'Pago'" class="parcelado-font-size form-control custom-select log-hidden-false" name="pre_indice" id="pre_indice" (change)="updateInlineIndice($event.target.value, row, 'indiceDataCalcAmor', 'indiceDCA', 'dataCalcAmor')">
 											<option *ngFor="let indice of indice_field" [value]="indice"
 												[selected]="indice === row.indiceDCA"> {{indice}}</option>
 										</select>
                                         <span class="log-visible-false">{{row.indiceDCA}}</span>
 
                                     </td>
-                                    <td [vincendas]="row">
+                                    <td>
                                         {{row.indiceDataCalcAmor || "---"}}
                                     </td>
-                                    <td [vincendas]="row">
+                                    <td>
                                         {{formatCurrency(row.valorNoVencimento)}} </td>
-                                    <td [vincendas]="row">
+                                    <td>
                                         {{formatCurrency(row.encargosMonetarios.correcaoPeloIndice)}} </td>
-                                    <td [vincendas]="row">
+                                    <td>
                                         {{row.encargosMonetarios.jurosAm.dias || 0}} </td>
-                                    <td [vincendas]="row">
+                                    <td>
                                         {{row.encargosMonetarios.jurosAm.percentsJuros || 0}} </td>
-                                    <td [vincendas]="row">
+                                    <td>
                                         {{formatCurrency(row.encargosMonetarios.jurosAm.moneyValue)}} </td>
-                                    <td [vincendas]="row">
+                                    <td>
                                         {{formatCurrency(row.encargosMonetarios.multa)}} </td>
-                                    <td [vincendas]="row">
+                                    <td>
                                         {{formatCurrency(row.subtotal)}} </td>
-                                    <td [vincendas]="row">
+                                    <td>
                                         {{formatCurrency(row.valorPMTVincenda)}} </td>
-                                    <td [vincendas]="row">
+                                    <td>
                                         {{formatCurrencyAmortizacao(row.amortizacao)}} </td>
-                                    <td [vincendas]="row">
+                                    <td>
                                         {{formatCurrency(row.totalDevedor)}} </td>
-                                    <td [vincendas]="row"> {{row.status}} </td>
-                                    <td [vincendas]="row" class="log-hidden-false" (click)="deleteRow(row)"><i style="color: red; cursor: pointer;" [hidden]="row.status === 'Pago'" class="nc-icon nc-simple-remove"></i>
+                                    <td> {{row.status}} </td>
+                                    <td class="log-hidden-false" (click)="deleteRow(row)"><i style="color: red; cursor: pointer;" [hidden]="row.status === 'Pago'" class="nc-icon nc-simple-remove"></i>
                                     </td>
                                 </tr>
                             </tbody>

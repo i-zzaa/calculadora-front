@@ -12,8 +12,12 @@ export class IndicesService {
     return this.http.get<Indices[]>(`${environment.API_PATH}/indices?indice=${indice}`);
   }
 
-  getIndicePage(indice: string, pageSize: number, pageNumber: number, draw: number) {
-    return this.http.get<Indices[]>(`${environment.API_PATH}/indices?pageSize=${pageSize}&pageNumber=${pageNumber}&indice=${indice}&getAll=${false}&draw=${draw}`);
+  // getIndicePage(indice: string, pageSize: number, pageNumber: number, draw: number) {
+  //   return this.http.get<Indices[]>(`${environment.API_PATH}/indices?pageSize=${pageSize}&pageNumber=${pageNumber}&indice=${indice}&getAll=${false}&draw=${draw}`);
+  // }
+
+  getIndicePage(indice: string, dataTablesParameters: any) {
+    return this.http.post<Indices[]>(`${environment.API_PATH}/indices?indice=${indice}`, dataTablesParameters);
   }
 
   getIndiceData(indice: string, data: string) {

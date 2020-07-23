@@ -67,7 +67,10 @@ export class IndicesComponent implements OnInit {
         const page = info.page || 0;
         const draw = dataTablesParameters.draw || 1;
 
-        this.indicesService.getIndicePage(indiceType, length, page, draw).subscribe(resp => {
+
+        console.log(dataTablesParameters);
+
+        this.indicesService.getIndicePage(indiceType, dataTablesParameters).subscribe(resp => {
           this.tableData.dataRows = resp['data'];
 
           callback({
@@ -136,7 +139,7 @@ export class IndicesComponent implements OnInit {
       this.tableLoading = true;
       const DATAINPUT = this.indice_form.data.value ? formatDate(this.indice_form.data.value, "YYYY-MM-DD") : false;
 
-      this.indicesService.getIndicePage(this.indice_form.indice.value, 10, 1, 1).subscribe(indices => {
+      this.indicesService.getIndicePage(this.indice_form.indice.value, {}).subscribe(indices => {
         this.tableData.dataRows = indices['data'];
         this.infoTable = indices;
 
