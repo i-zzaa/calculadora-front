@@ -99,10 +99,7 @@ export class LogComponent implements OnInit {
           this.infoContrato.pasta,
           this.infoContrato.contrato,
           this.infoContrato.tipo_contrato,
-          length,
-          page,
-          draw,
-          this.infoContrato.recuperacaoJudicial
+          dataTablesParameters
         ).subscribe(logs => {
           this.tableData.dataRows = logs['data'];
 
@@ -154,10 +151,7 @@ export class LogComponent implements OnInit {
       this.infoContrato.pasta,
       this.infoContrato.contrato,
       this.infoContrato.tipo_contrato,
-      10,
-      1,
-      1,
-      this.infoContrato.recuperacaoJudicial
+      {}
     ).subscribe(logs => {
       if (!logs['data'].length) {
         this.alertType = {

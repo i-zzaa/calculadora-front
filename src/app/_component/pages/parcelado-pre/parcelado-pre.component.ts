@@ -22,7 +22,8 @@ import {
   PARCELA_ABERTA,
   PARCELADO_PRE_URL,
   PARCELADO_PRE,
-  PARCELADO_POS
+  PARCELADO_POS,
+  PARCELA_AMORTIZADA
 } from '../../util/constants'
 import { LowerCasePipe } from '@angular/common';
 
@@ -364,7 +365,7 @@ export class ParceladoPreComponent implements OnInit {
       TABLEDATA.map((row, key) => {
         row['isAmortizado'] = false;
 
-        if (row['status'] === PARCELA_ABERTA && !row['amortizacaoDataDiferenciada'] && valor > 0) {
+        if (!row['amortizacaoDataDiferenciada'] && valor > 0) {
           DIFERENCIADA.map((amortizacao, index) => {
             if (valor <= 0) {
               return;
@@ -413,8 +414,12 @@ export class ParceladoPreComponent implements OnInit {
                     dataVencimento: TABLEDATA[indexNewParcela]['dataCalcAmor'],
                     encargosMonetarios: { ...TABLEDATA[indexNewParcela]['encargosMonetarios'], jurosAm: { ...TABLEDATA[indexNewParcela]['encargosMonetarios']['jurosAm'], dias: qtdDias } },
                     amortizacaoDataDiferenciada: true,
-                    status: PARCELA_ABERTA
+                    status: PARCELA_ABERTA,
                   };
+
+                  if (amor > 2) {
+                    TABLEDATA[amor]['totalDevedor']  = TABLEDATA[amor]['subtotal'] 
+                  }
 
                   valor -= DIFERENCIADA[amor]['saldo_devedor']
                   TABLEDATA.splice(++indexNewParcela, 0, newParcela);
@@ -431,7 +436,6 @@ export class ParceladoPreComponent implements OnInit {
                 amortizacao: 0,
                 dataCalcAmor: amortizacao['data_vencimento'],
                 dataVencimento: TABLEDATA[indexNewParcela]['dataCalcAmor'],
-                valorNoVencimento: TABLEDATA[indexNewParcela]['totalDevedor'] - valor,
                 encargosMonetarios: { ...TABLEDATA[indexNewParcela]['encargosMonetarios'], jurosAm: { ...TABLEDATA[indexNewParcela]['encargosMonetarios']['jurosAm'], dias: qtdDias } },
                 amortizacaoDataDiferenciada: true,
                 status: PARCELA_ABERTA
@@ -744,7 +748,9 @@ export class ParceladoPreComponent implements OnInit {
           //ao adc uma amortizacao diferenciada, a parcela anterior deve ser desconsiderada e gerado uma nova parcela
           if (row['amortizacaoDataDiferenciada']) {
             const rowAnterior = this.tableData.dataRows[key - 1];
-            rowAnterior['totalDevedor'] = 0
+            rowAnterior['status'] = PARCELA_AMORTIZADA;
+            rowAnterior['isAmortizado'] = true;
+            rowAnterior['totalDevedor'] = 0;
             row['valorNoVencimento'] = parseFloat(rowAnterior['subtotal']) - parseFloat(rowAnterior['amortizacao']);
           }
 
@@ -836,12 +842,6 @@ export class ParceladoPreComponent implements OnInit {
             }
 
             this.subtotal_data_calculo = this.total_data_calculo = formatDate(this.formDefaultValues.formDataCalculo)
-
-            // const tmpSubTotal = this.tableData.dataRows.reduce((total = 0, row2) => {
-            //   const val1 = typeof(total) === 'number' ? total : parseFloat(total['subtotal']);
-            //   const val2 =  parseFloat(row2['subtotal'])
-            //   return val1 + val2;
-            // });
             this.total_subtotal = totalDevedorTotalVincendas + totalDevedorTotal;
             this.total_honorarios = (this.total_subtotal + this.amortizacaoGeral) * (this.formDefaultValues["formHonorarios"] / 100)
             this.total_multa_sob_contrato = (this.total_subtotal + this.amortizacaoGeral + this.total_honorarios) * (this.formDefaultValues["formMultaSobContrato"] / 100)
