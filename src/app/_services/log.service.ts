@@ -23,6 +23,6 @@ export class LogService {
   // }
 
   getLogPage(pasta: string, contrato: string, tipoContrato: string, dataTablesParameters: any) {
-    return this.http.post<Log[]>(`${environment.API_PATH}/log?pasta=${pasta}&contrato=${contrato}&tipoContrato=${tipoContrato}`, dataTablesParameters);
+    return this.http.post<Log[]>(`${environment.API_PATH}/log/pagination?pasta=${pasta}&contrato=${contrato}&tipoContrato=${tipoContrato}`, dataTablesParameters);
   }
 }
