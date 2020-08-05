@@ -94,7 +94,21 @@ export class LogComponent implements OnInit {
         const length = dataTablesParameters.length || 10;
         const page = info.page || 0;
         const draw = dataTablesParameters.draw || 1;
-
+        //mock
+        dataTablesParameters.columns = [
+          { data: 'Id' },
+          { data: 'data' },
+          { data: 'usuario' },
+          { data: 'pasta' },
+          { data: 'contrato' },
+          { data: 'tipoContrato' },
+          { data: 'dataSimulacao' },
+          { data: 'infoTabela' },
+          { data: 'acao' },
+          { data: 'modulo' },
+          { data: 'recuperacaoJudicial' },
+          { data: 'recuperacaoJudicial', orderable: false }
+        ];
         this.logService.getLogPage(
           this.infoContrato.pasta,
           this.infoContrato.contrato,
