@@ -1,0 +1,116 @@
+<div class="card" style="min-height: 350px">
+  <div class="card-header">
+    <h5 class="card-title">Amortização</h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-lg-12 col-sm-12">
+        <form class="row" [formGroup]="preFormAmortizacao">
+          <div class="col-md-4 col-sm-12">
+            <label for="nome" class="col-form-label">Tipo Amortização</label>
+            <select
+              class="form-control custom-select col-md-12 col-sm-12"
+              formControlName="tipo"
+            >
+              <option *ngFor="let tipo of amortizacao_field" [value]="tipo">
+                {{ tipo }}
+              </option>
+            </select>
+          </div>
+          <div
+            class="col-md-4 col-sm-12"
+            [hidden]="pre_form_amortizacao.tipo.value === 'Data do Cálculo'"
+          >
+            <label for="nome" class="col-form-label">Data</label>
+            <input
+              type="date"
+              class="form-control col-md-12 col-sm-12"
+              formControlName="data_vencimento"
+              max="3000-12-31"
+              min="1000-01-01"
+            />
+          </div>
+          <div class="col-md-4 col-sm-12">
+            <label for="nome" class="col-form-label">Valor</label>
+            <input
+              type="number"
+              (change)="verifyNumber($event)"
+              min="0"
+              class="form-control col-md-12 col-sm-12"
+              name="saldo_devedor"
+              style="height: 35px"
+              id="saldo_devedor"
+              formControlName="saldo_devedor"
+            />
+          </div>
+          <div class="col-sm-4">
+            <br />
+            <div class="stats">
+              <button
+                type="button"
+                (click)="adicionarAmortizacao()"
+                class="btn btn-info btn-round"
+                [disabled]="!preFormAmortizacao.valid || !pesquisaFormValid"
+              >
+                Adicionar
+              </button>
+              <div
+                class="d-flex justify-content-center"
+                *ngIf="tableLoading"
+                style="position: absolute; top: 33px; right: 80px"
+              >
+                <div
+                  class="spinner-grow text-primary"
+                  style="width: 2rem; height: 2rem"
+                  role="status"
+                >
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <br />
+        <br />
+      </div>
+      <!-- Table amortização -->
+      <div
+        class="col-md-12"
+        *ngIf="!(tableDataAmortizacao.dataRows.length === 0)"
+      >
+        <table
+          [dtOptions]="dtOptionsAmortizacao"
+          datatable
+          class="table table-hover"
+        >
+          <thead>
+            <tr align="center">
+              <th>Data de Laçamento</th>
+              <th>Valor</th>
+              <th>Tipo</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let row of tableDataAmortizacao.dataRows"
+              align="center"
+            >
+              <td>{{ formatDate(row.data_vencimento) }}</td>
+              <td>{{ formatCurrency(row.saldo_devedor) }}</td>
+              <td>{{ row.tipo }}</td>
+              <td (click)="deleteRowAmortizacao(row)">
+                <i
+                  style="color: red; cursor: pointer"
+                  class="nc-icon nc-simple-remove"
+                ></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Fim Table amortização-->
+    </div>
+    <br />
+  </div>
+</div>

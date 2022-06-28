@@ -1,0 +1,155 @@
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title">Cadastro de Parcelas</h5>
+  </div>
+  <div class="card-body" style="min-height: 285px">
+    <div class="row">
+      <div class="col-md-12">
+        <form class="row" [formGroup]="preFormCadastroParcelas">
+          <div class="col-md-4 col-sm-12">
+            <label for="nome" class="col-form-label">Nº Parcelas</label>
+            <input
+              type="number"
+              (change)="verifyNumber($event)"
+              min="0"
+              class="form-control col-md-11 col-sm-12"
+              formControlName="nparcelas"
+              value
+            />
+          </div>
+          <div class="col-md-4 col-sm-12">
+            <label for="nome" class="col-form-label">Parcela inicial</label>
+            <input
+              type="number"
+              (change)="verifyNumber($event)"
+              min="{{ minParcela }}"
+              title="o valor inicial mínimo é {{ minParcela || 1 }}"
+              class="form-control col-md-11 col-sm-12"
+              formControlName="parcelaInicial"
+              value
+              (change)="verifyNumberInitial($event)"
+            />
+          </div>
+          <div class="col-md-4 col-sm-12">
+            <label for="nome" class="col-form-label"
+              >Data Vencimento Inicial</label
+            >
+            <input
+              type="date"
+              class="form-control col-md-12 col-sm-12"
+              formControlName="dataVencimento"
+              max="3000-12-31"
+              min="1000-01-01"
+            />
+          </div>
+          <div class="col-md-4 col-sm-12">
+            <label for="nome" class="col-form-label">Valor no Vencimento</label>
+            <input
+              type="number"
+              (change)="verifyNumber($event)"
+              min="0"
+              class="form-control col-md-11 col-sm-12"
+              formControlName="valorNoVencimento"
+              value
+            />
+          </div>
+          <div class="col-md-4 col-sm-12">
+            <label for="nome" class="col-form-label">Status</label>
+            <select
+              class="form-control custom-select col-md-12 col-sm-12"
+              formControlName="status"
+            >
+              <option *ngFor="let status of status_field" [value]="status">
+                {{ status }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-12 col-sm-12 form-inline mt-3">
+            <div class="stats form-group mb-2">
+              <button
+                type="button"
+                (click)="adicionarParcelas()"
+                class="btn btn-info btn-round"
+                [disabled]="
+                  !preFormCadastroParcelas.valid || !pesquisaFormValid
+                "
+              >
+                Adicionar
+              </button>
+            </div>
+            <div class="stats form-group mb-2 ml-md-2">
+              <button
+                type="button"
+                (click)="incluir()"
+                class="btn btn-info btn-round"
+                [disabled]="tableDataParcelas.dataRows.length === 0"
+              >
+                Incluir Parcelas
+              </button>
+            </div>
+          </div>
+        </form>
+        <br />
+        <br />
+      </div>
+      <!-- Table cadastro de parcelas -->
+      <div class="col-md-12" *ngIf="!(tableDataParcelas.dataRows.length === 0)">
+        <table [dtOptions]="dtOptions" datatable class="table table-hover">
+          <thead>
+            <tr align="center">
+              <th>Nº Parcela</th>
+              <th>Data Vencimento</th>
+              <th>Valor no Vencimento</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of tableDataParcelas.dataRows" align="center">
+              <td>{{ row.nparcelas }}</td>
+              <td>
+                <input
+                  type="date"
+                  class="parcelado-font-size form-control col-md-11 col-sm-12"
+                  (blur)="changeCadastroParcelas($event, row, 'dataVencimento')"
+                  [value]="row.dataVencimento"
+                />
+              </td>
+              <td>
+                <input
+                  class="parcelado-font-size form-control col-md-11 col-sm-12"
+                  (chablurnge)="
+                    changeCadastroParcelas($event, row, 'valorNoVencimento')
+                  "
+                  [value]="formatCurrency(row.valorNoVencimento)"
+                />
+              </td>
+              <td>
+                <select
+                  class="parcelado-font-size form-control custom-select"
+                  (change)="changeCadastroParcelas($event, row, 'status')"
+                >
+                  <option
+                    *ngFor="let status of status_field"
+                    [value]="status"
+                    [selected]="status === row.status"
+                  >
+                    {{ status }}
+                  </option>
+                </select>
+              </td>
+              <td (click)="deleteRowParcelas(row)">
+                <i
+                  style="color: red; cursor: pointer"
+                  class="nc-icon nc-simple-remove"
+                ></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Fim Table cadastro de parcelas-->
+    </div>
+  </div>
+</div>

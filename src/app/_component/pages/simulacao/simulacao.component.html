@@ -1,0 +1,136 @@
+<div>
+  <form class="row" [formGroup]="formRiscos">
+    <div class="col-lg-12 mb-3 mt-3">
+      <hr />
+    </div>
+    <!-- <div class="col-md-3 col-sm-12">
+            <label for="nome" class="col-form-label">Última Atualização</label>
+            <input type="date" class="form-control col-md-11 col-sm-12" name="ultima_atualizacao"
+                formControlName="formUltimaAtualizacao" disabled>
+        </div> -->
+    <div class="col-md-3 col-sm-12">
+      <label for="nome" class="col-form-label">Data do Cálculo</label>
+      <input
+        type="date"
+        class="form-control col-md-11 col-sm-12"
+        name="data_calculo"
+        id="data_calculo"
+        formControlName="formDataCalculo"
+        (blur)="changeInput($event)"
+      />
+    </div>
+    <div class="col-md-3 col-sm-12">
+      <label for="indice" class="col-form-label">Índice</label>
+      <select
+        class="form-control col-md-12 col-sm-12 select-indice"
+        name="indice"
+        #selectIndice
+        (change)="changeInput($event)"
+        id="indice"
+        formControlName="formIndice"
+      >
+        <option *ngFor="let ind of indice_field" [value]="ind">
+          {{ ind }}
+        </option>
+      </select>
+    </div>
+    <div class="col-md-3 col-sm-12">
+      <label for="nome" class="col-form-label">Encargos Contratuais %</label>
+      <input
+        [attr.disabled]="!isEncargo ? true : null"
+        type="number"
+        (change)="validarNumeros($event)"
+        min="0"
+        class="form-control col-md-11 col-sm-12"
+        name="encargos_contratuais"
+        id="encargos_contratuais"
+        formControlName="formIndiceEncargos"
+        title="{{
+          !isEncargo ? 'O índice deve ser Encargos Contratuais %' : null
+        }}"
+      />
+    </div>
+    <div class="col-md-3 col-sm-12">
+      <label for="nome" class="col-form-label">Multa %</label>
+      <input
+        type="number"
+        (change)="validarNumeros($event)"
+        min="0"
+        class="form-control col-md-11 col-sm-12"
+        name="multa"
+        id="multa"
+        formControlName="formMulta"
+      />
+    </div>
+    <div class="col-md-3 col-sm-12">
+      <label for="nome" class="col-form-label">Juros Mora %</label>
+      <input
+        type="number"
+        (change)="validarNumeros($event)"
+        min="0"
+        class="form-control col-md-11 col-sm-12"
+        name="juros_mora"
+        id="juros_mora"
+        formControlName="formJuros"
+      />
+    </div>
+    <div class="col-md-3 col-sm-12">
+      <label for="nome" class="col-form-label">Honorários %</label>
+      <input
+        type="number"
+        (change)="validarNumeros($event)"
+        min="0"
+        class="form-control col-md-11 col-sm-12"
+        name="honorarios"
+        id="honorarios"
+        formControlName="formHonorarios"
+      />
+    </div>
+    <div class="col-md-3 col-sm-12">
+      <label for="nome" class="col-form-label">Multa sob contrato %</label>
+      <input
+        type="number"
+        (change)="validarNumeros($event)"
+        min="0"
+        class="form-control col-md-11 col-sm-12"
+        name="multa_sobre_constrato"
+        id="multa_sobre_constrato"
+        formControlName="formMultaSobContrato"
+      />
+    </div>
+    <div class="col-md-3 col-sm-12" [hidden]="!isDesagio">
+      <label for="nome" class="col-form-label">Deságio %</label>
+      <input
+        type="number"
+        (change)="validarNumeros($event)"
+        min="0"
+        class="form-control col-md-11 col-sm-12"
+        name="desagio"
+        id="desagio"
+        formControlName="formDesagio"
+      />
+    </div>
+    <div class="col-md-12 col-sm-12 form-inline mt-3">
+      <div class="stats form-group mb-2">
+        <button
+          type="button"
+          [disabled]="!tableDataLength || updateLoadingBtn"
+          (click)="atualizarRisco()"
+          class="btn btn-info btn-round"
+        >
+          Atualizar Risco
+        </button>
+      </div>
+      <div class="stats form-group mb-2 ml-md-2">
+        <button
+          type="button"
+          [disabled]="!tableDataLength || updateLoadingBtn"
+          (click)="simular()"
+          class="btn btn-info btn-round"
+        >
+          Simular Cálculo
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

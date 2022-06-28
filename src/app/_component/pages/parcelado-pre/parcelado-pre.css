@@ -1,0 +1,15 @@
+
+.alert-parcelas {
+    position: fixed; 
+    right: 10px; 
+    top: 10px; 
+    z-index: 1030
+}
+
+.parcelado-font-size {
+    font-size: 11px !important;
+}
+
+.dataTables_wrapper.no-footer .dataTables_scrollBody {
+    border-bottom: none;
+}

@@ -1,0 +1,122 @@
+<div class="row">
+  <app-notificacao
+    [mensagem]="alertType.mensagem"
+    [tipo]="alertType.tipo"
+    [show]="updateLoading"
+  ></app-notificacao>
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">Cadastro de Índice</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-12">
+            <form class="row" [formGroup]="indicesForm">
+              <div class="col-md-3 col-sm-12">
+                <label for="indice" class="col-form-label">Índices</label>
+                <select
+                  class="form-control custom-select col-md-12 col-sm-12"
+                  name="indice"
+                  id="indice"
+                  formControlName="indice"
+                  (change)="changeIndices(true)"
+                >
+                  <option *ngFor="let indice of indices_field" [value]="indice">
+                    {{ indice }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-3 col-sm-12">
+                <label for="nome" class="col-form-label">Data</label>
+                <input
+                  type="date"
+                  class="form-control col-md-12 col-sm-12"
+                  formControlName="data"
+                  max="3000-12-31"
+                  min="1000-01-01"
+                />
+              </div>
+              <div class="col-md-3 col-sm-12">
+                <label for="nome" class="col-form-label">Valor</label>
+                <input
+                  type="number"
+                  (change)="verifyNumber($event)"
+                  min="0"
+                  class="form-control col-md-11 col-sm-12"
+                  formControlName="valor"
+                  value
+                />
+              </div>
+              <div class="col-md-3 col-sm-12 form-inline mt-3">
+                <div class="stats form-group mb-2">
+                  <button
+                    type="button"
+                    (click)="adicionaIndice()"
+                    class="btn btn-info btn-round"
+                    [disabled]="!indicesForm.valid"
+                  >
+                    Adicionar
+                  </button>
+                </div>
+              </div>
+            </form>
+            <br />
+            <br />
+            <div class="d-flex justify-content-center" *ngIf="tableLoading">
+              <div class="spinner-grow text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <!-- Table cadastro de parcelas -->
+          <div class="col-md-12" *ngIf="!(tableData.dataRows.length === 0)">
+            <table
+              [dtOptions]="dtOptions"
+              datatable
+              class="table table-hover"
+              style="width: 100%"
+              id="tableIndice"
+            >
+              <thead>
+                <tr align="center">
+                  <th>Índice</th>
+                  <th>Data</th>
+                  <th>Valor</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of tableData.dataRows" align="center">
+                  <td>{{ row.indice }}</td>
+                  <td>
+                    <input
+                      type="date"
+                      class="form-control col-md-11 col-sm-12"
+                      (change)="changeIndiceTable($event, row, 'data')"
+                      [value]="formatDate(row.data, 'YYYY-MM-DD')"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      class="form-control col-md-11 col-sm-12"
+                      (change)="changeIndiceTable($event, row, 'valor')"
+                      [value]="row.valor"
+                    />
+                  </td>
+                  <td (click)="deleteRow(row)">
+                    <i
+                      style="color: red; cursor: pointer"
+                      class="nc-icon nc-simple-remove"
+                    ></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Fim Table cadastro de parcelas-->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

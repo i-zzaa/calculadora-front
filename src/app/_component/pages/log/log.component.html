@@ -1,0 +1,83 @@
+<div class="row">
+  <app-notificacao
+    [mensagem]="alertType.mensagem"
+    [tipo]="alertType.tipo"
+    [show]="updateLoading"
+  ></app-notificacao>
+
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title"></h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-12">
+            <app-pesquisa
+              (contractRef)="pesquisarContratos($event)"
+              [tableLoading]="tableLoading"
+            >
+            </app-pesquisa>
+          </div>
+        </div>
+        <br />
+        <br />
+      </div>
+    </div>
+  </div>
+  <div
+    class="col-md-12"
+    *ngIf="!(tableData.dataRows.length === 0) && !tableLoading"
+  >
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title"></h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-12">
+            <table
+              [dtOptions]="dtOptions"
+              datatable
+              class="table table-hover"
+              style="width: 100%"
+              id="tableLog"
+            >
+              <thead>
+                <tr align="center">
+                  <th></th>
+                  <th>Data</th>
+                  <th>Usuário</th>
+                  <th>Pasta</th>
+                  <th>Contrato</th>
+                  <th>Tipo de Contrato</th>
+                  <th>Tipo de Ação</th>
+                  <th>Data Simulação</th>
+                  <th>Módulo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of tableData.dataRows" align="center">
+                  <td class="details-control" (click)="toggleDetails(row)">
+                    <i
+                      style="color: green; cursor: pointer"
+                      class="nc-icon nc-minimal-right"
+                    ></i>
+                  </td>
+                  <td>{{ formatDate(row.data, "DD/MM/YYYY hh:ss") }}</td>
+                  <td>{{ row.usuario }}</td>
+                  <td>{{ row.pasta }}</td>
+                  <td>{{ row.contrato }}</td>
+                  <td>{{ row.tipoContrato }}</td>
+                  <td>{{ row.acao }}</td>
+                  <td>{{ formatDate(row.dataSimulacao) }}</td>
+                  <td>{{ row.modulo }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

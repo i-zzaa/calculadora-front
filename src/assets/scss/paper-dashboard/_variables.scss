@@ -197,7 +197,7 @@ $padding-btn-vertical:         11px !default;
 $padding-btn-horizontal:       22px !default;
 
 $padding-base-vertical:        .5rem !default;
-$padding-base-horizontal:      .7rem !default;
+$padding-base-horizontal:      .8rem !default;
 
 $padding-round-horizontal:     23px !default;
 
@@ -357,8 +357,13 @@ $social-linkedin: 			         #0077B5 !default;
 $social-linkedin-state-color:        darken(#0077B5, 5%) !default;
 
 // Sidebar variables
-$sidebar-width:              calc(100% - 160px) !default;
-$sidebar-mini-width:         calc(100% - 80px) !default;
+
+$sidebar-width:              250px !default;
+$sidebar-mini-width:         85px !default;
+
+//main painel
+$main-painel-max:            calc(100% - 85px) !default;
+$main-painel:                calc(100% - 250px) !default;
 
 
 // Social icons color

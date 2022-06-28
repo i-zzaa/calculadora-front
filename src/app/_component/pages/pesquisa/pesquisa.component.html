@@ -1,0 +1,136 @@
+<div>
+  <form class="row" [formGroup]="peForm">
+    <div class="col-md-4 col-sm-12">
+      <label for="pasta" class="col-form-label">Pasta</label>
+      <ng-select
+        [items]="folderData_field"
+        bindLabel="pasta"
+        placeholder="Selecione a pasta"
+        appendTo="body"
+        formControlName="pasta"
+        (change)="setContrato()"
+      >
+      </ng-select>
+    </div>
+    <div class="col-md-4 col-sm-12">
+      <label for="contrato" class="col-form-label">Contrato</label>
+      <ng-select
+        [items]="contractList_field"
+        bindLabel="contrato"
+        placeholder="Selecione o contrato"
+        appendTo="body"
+        formControlName="contrato"
+        (change)="setTypeContract()"
+      >
+      </ng-select>
+    </div>
+    <div class="col-md-4 col-sm-12">
+      <label for="nome" class="col-form-label">Tipo de Contrato</label>
+      <ng-select
+        [items]="typeContractList_field"
+        bindLabel="tipo_contrato"
+        placeholder="Selecione o tipo de contrato"
+        appendTo="body"
+        formControlName="tipo_contrato"
+      >
+      </ng-select>
+    </div>
+    <div class="col-md-4 col-sm-12">
+      <label for="cliente" class="col-form-label">Cliente</label>
+      <ng-select
+        [items]="clienteList_field"
+        bindLabel="cliente"
+        placeholder="Selecione o cliente"
+        appendTo="body"
+        formControlName="cliente"
+        (change)="setCliente()"
+      >
+      </ng-select>
+    </div>
+    <div class="col-md-4 col-sm-12">
+      <label for="cnpj" class="col-form-label">CNPJ</label>
+      <ng-select
+        [items]="cnpjList_field"
+        bindLabel="cnpj"
+        placeholder="Selecione o CNPJ"
+        appendTo="body"
+        formControlName="cnpj"
+        (change)="setCnpj()"
+      >
+      </ng-select>
+    </div>
+    <div class="col-md-2 col-sm-12">
+      <fieldset class="form-group ml-3">
+        <div class="form-group row">
+          <legend class="col-form-label">
+            <label class="form-check-label" for="profile2"
+              >Recuperação Judicial</label
+            >
+          </legend>
+          <div>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="recuperacaoJudicial"
+                formControlName="recuperacaoJudicial"
+                id="recuperacaoJudicial1"
+                [value]="true"
+              />
+              <label
+                class="form-check-label"
+                for="recuperacaoJudicial1"
+                style="margin: -30px"
+              >
+                Sim
+              </label>
+            </div>
+            <div class="form-check form-check-inline ml-4">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="recuperacaoJudicial"
+                formControlName="recuperacaoJudicial"
+                id="recuperacaoJudicial2"
+                [value]="false"
+              />
+              <label
+                class="form-check-label"
+                for="recuperacaoJudicial2"
+                style="margin: -30px"
+              >
+                Não
+              </label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+    <div class="col-sm-2">
+      <br />
+      <div class="stats">
+        <button
+          type="button"
+          (click)="setContractRef()"
+          class="btn btn-info btn-round"
+          [disabled]="!peForm.valid || tableLoading"
+        >
+          Pesquisar
+        </button>
+        <div
+          class="d-flex justify-content-center"
+          *ngIf="tableLoading"
+          style="position: absolute; top: 33px"
+        >
+          <div
+            class="spinner-grow text-primary"
+            style="width: 2rem; height: 2rem"
+            role="recuperacaoJudicial"
+          >
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

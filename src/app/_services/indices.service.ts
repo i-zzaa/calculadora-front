@@ -1,29 +1,63 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Indices } from "../_models/indices";
+import { environment } from "../../environments/environment";
 
-import * as INPC from './indices-INPC.json';
-import * as CDI from './indices-CDI.json';
-import * as IGPM from './indices-IGPM.json';
-
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class IndicesService {
-    inpc:any = INPC;
-    cdi:any = CDI;
-    igpm:any = IGPM;
+  constructor(private http: HttpClient) {}
 
-    constructor(private http: HttpClient) {}
+  getIndice(indice: string) {
+    return this.http.get<Indices[]>(
+      `${environment.API_PATH}/indices?indice=${indice}`
+    );
+  }
 
-    public getINPC(): Observable<any> {
-      return this.inpc.default;
+  getIndicePage(
+    indice: string,
+    pageSize: number,
+    pageNumber: number,
+    draw: number
+  ) {
+    return this.http.get<Indices[]>(
+      `${
+        environment.API_PATH
+      }/indices?pageSize=${pageSize}&pageNumber=${pageNumber}&indice=${indice}&getAll=${false}&draw=${draw}`
+    );
+  }
+
+  getIndiceData(indice: string, data: string) {
+    return this.http.get<Indices[]>(
+      `${environment.API_PATH}/indices/byDate?indice=${indice}&data=${data}`
+    );
+  }
+
+  addIndice(indiceList: any) {
+    return this.http.post(`${environment.API_PATH}/indices`, indiceList);
+  }
+
+  updateIndice(id: number, indice: any) {
+    return this.http.put(`${environment.API_PATH}/indices/${id}`, [indice]);
+  }
+
+  removeIndice(id: number) {
+    return this.http.delete(`${environment.API_PATH}/indices/${id}`);
+  }
+
+  async getIndiceDataBase(indice, data, formDefaultValues) {
+    if (!indice || !data) {
+      return 1;
     }
-
-    public getIGPM(): Observable<any> {
-      return this.igpm.default;
+    switch (indice) {
+      case "Encargos Contratuais %":
+        return new Promise((resolve, reject) => {
+          resolve(formDefaultValues.formIndiceEncargos);
+        });
+        break;
+      default:
+        return (await this.getIndiceData(indice, data))
+          .toPromise()
+          .then((ind: any) => ind.valor);
     }
-
-    public getCDI(): Observable<any> {
-      return this.cdi.default
-    }
-
+  }
 }
