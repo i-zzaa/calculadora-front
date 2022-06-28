@@ -7,7 +7,7 @@
       <div class="card-body">
         <form [formGroup]="userForm">
           <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
-            {{errorMessage}}
+            {{ errorMessage }}
           </div>
           <div class="row">
             <div class="col-sm-12 pt-0">
@@ -16,35 +16,62 @@
                   <div class="form-group row">
                     <label for="nome" class="ml-3 col-form-label">Nome</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" name="user_name" formControlName="user_name"
-                        id="user_name" required>
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="user_name"
+                        formControlName="user_name"
+                        id="user_name"
+                        required
+                      />
                     </div>
                   </div>
                 </div>
-                <div class="col-6  pt-0 col-auto">
+                <div class="col-6 pt-0 col-auto">
                   <fieldset class="form-group ml-sm-3">
                     <div class="form-group row">
                       <legend class="col-form-label col-sm-5 pt-0">
-                        <label class="form-check-label" for="profile2">Perfil</label>
+                        <label class="form-check-label" for="profile2"
+                          >Perfil</label
+                        >
                       </legend>
                       <div class="col-sm-7 ml-4 ml-sm-2">
                         <div class="form-check">
-                          <input class="form-check-input" type="radio" name="profile" formControlName="profile"
-                            id="profile1" value="consult" checked>
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="profile"
+                            formControlName="profile"
+                            id="profile1"
+                            value="consult"
+                            checked
+                          />
                           <label class="form-check-label" for="profile1">
                             Consulta
                           </label>
                         </div>
                         <div class="form-check">
-                          <input class="form-check-input" type="radio" name="profile" formControlName="profile"
-                            id="profile2" value="editor">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="profile"
+                            formControlName="profile"
+                            id="profile2"
+                            value="editor"
+                          />
                           <label class="form-check-label" for="profile2">
                             Edição
                           </label>
                         </div>
                         <div class="form-check">
-                          <input class="form-check-input" type="radio" name="profile" formControlName="profile"
-                            id="profile3" value="admin">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="profile"
+                            formControlName="profile"
+                            id="profile3"
+                            value="admin"
+                          />
                           <label class="form-check-label" for="profile3">
                             Administrador
                           </label>
@@ -57,19 +84,34 @@
                   <fieldset class="form-group">
                     <div class="form-group row">
                       <legend class="col-form-label col-sm-5 pt-0">
-                        <label class="form-check-label" for="status">Status</label>
+                        <label class="form-check-label" for="status"
+                          >Status</label
+                        >
                       </legend>
-                      <div class="col-sm-7  ml-2">
+                      <div class="col-sm-7 ml-2">
                         <div class="form-check">
-                          <input class="form-check-input" type="radio" name="status" formControlName="status"
-                            id="status1" [value]="true" checked>
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="status"
+                            formControlName="status"
+                            id="status1"
+                            [value]="true"
+                            checked
+                          />
                           <label class="form-check-label" for="status1">
                             Ativo
                           </label>
                         </div>
-                        <div class="form-check ">
-                          <input class="form-check-input" type="radio" name="status" formControlName="status"
-                            id="status2" [value]="false">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="status"
+                            formControlName="status"
+                            id="status2"
+                            [value]="false"
+                          />
                           <label class="form-check-label" for="status2">
                             Inativo
                           </label>
@@ -81,11 +123,23 @@
               </div>
               <div class="row card-footer">
                 <div class="update ml-auto mr-1">
-                  <button type="button" class="btn btn-info btn-round" (click)="addUser()"
-                    [disabled]="!userForm.valid">Adicionar</button>
+                  <button
+                    type="button"
+                    class="btn btn-info btn-round"
+                    (click)="addUser()"
+                    [disabled]="!userForm.valid"
+                  >
+                    Adicionar
+                  </button>
                 </div>
                 <div class="update">
-                  <button type="button" (click)="resetFields()" class="btn btn-info btn-round">Limpar</button>
+                  <button
+                    type="button"
+                    (click)="resetFields()"
+                    class="btn btn-info btn-round"
+                  >
+                    Limpar
+                  </button>
                 </div>
               </div>
             </div>
@@ -95,6 +149,6 @@
     </div>
   </div>
   <div class="col-md-8 col-sm-12 pt-0">
-    <table-cmp ></table-cmp>
+    <table-cmp></table-cmp>
   </div>
 </div>

@@ -1,20 +1,23 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { getCurrentDate, verifyNumber, formatDate } from '../../util/util';
-import { LISTA_INDICES, ENCARGOS, PARCELADO_PRE_URL } from '../../util/constants'
+import { Component, OnInit, Input, EventEmitter, Output } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { getCurrentDate, verifyNumber, formatDate } from "../../util/util";
+import {
+  LISTA_INDICES,
+  ENCARGOS,
+  PARCELADO_PRE_URL,
+} from "../../util/constants";
 
 @Component({
-  selector: 'app-simulacao',
-  templateUrl: './simulacao.component.html'
+  selector: "app-simulacao",
+  templateUrl: "./simulacao.component.html",
 })
 export class SimulacaoComponent implements OnInit {
-
   formRiscos: FormGroup;
   @Input() updateLoadingBtn: boolean;
   @Input() tableDataLength: boolean;
-  @Input() isDesagio: boolean; 
-  @Input() ultimaAtualizacao: string; 
-  
+  @Input() isDesagio: boolean;
+  @Input() ultimaAtualizacao: string;
+
   @Output() formValue = new EventEmitter();
   @Output() simularCalculo = new EventEmitter();
   @Output() salvar = new EventEmitter();
@@ -22,29 +25,29 @@ export class SimulacaoComponent implements OnInit {
   indice_field = LISTA_INDICES;
   isEncargo: boolean;
 
-  constructor(
-    private formBuilder: FormBuilder
-  ) {
-  }
+  constructor(private formBuilder: FormBuilder) {}
 
   ngOnInit(): void {
     this.formRiscos = this.formBuilder.group({
-      formDataCalculo: getCurrentDate('YYYY-MM-DD'),
-      formUltimaAtualizacao: '',
+      formDataCalculo: getCurrentDate("YYYY-MM-DD"),
+      formUltimaAtualizacao: "",
       formMulta: [],
       formJuros: [],
       formHonorarios: [],
       formMultaSobContrato: [],
-      formIndice:  [],
+      formIndice: [],
       formIndiceEncargos: [],
-      formDesagio: []
+      formDesagio: [],
     });
 
     this.isEncargo = this.form_riscos.formIndice.value === ENCARGOS;
   }
 
   ngAfterViewInit() {
-    this.formRiscos.value.formUltimaAtualizacao = formatDate(this.ultimaAtualizacao, 'YYYY-MM-DD') ;
+    this.formRiscos.value.formUltimaAtualizacao = formatDate(
+      this.ultimaAtualizacao,
+      "YYYY-MM-DD"
+    );
   }
 
   simular() {
@@ -52,12 +55,12 @@ export class SimulacaoComponent implements OnInit {
   }
 
   atualizarRisco() {
-    this.formRiscos.value.formUltimaAtualizacao = getCurrentDate('YYYY-MM-DD');
+    this.formRiscos.value.formUltimaAtualizacao = getCurrentDate("YYYY-MM-DD");
     this.salvar.emit();
   }
 
   resetForm(e) {
-    this.formRiscos.reset({ formDataCalculo: getCurrentDate('YYYY-MM-DD') });
+    this.formRiscos.reset({ formDataCalculo: getCurrentDate("YYYY-MM-DD") });
     setTimeout(() => {
       this.changeInput(e);
     }, 100);
@@ -73,5 +76,7 @@ export class SimulacaoComponent implements OnInit {
     this.formValue.emit(this.formRiscos.value);
   }
 
-  get form_riscos() { return this.formRiscos.controls; }
+  get form_riscos() {
+    return this.formRiscos.controls;
+  }
 }

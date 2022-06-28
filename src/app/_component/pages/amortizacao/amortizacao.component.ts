@@ -1,16 +1,27 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
-import { getCurrentDate, formatDate, formatCurrency, getLastLine, verifyNumber, getQtdDias } from '../../util/util';
-import { LANGUAGEM_TABLE, LISTA_AMORTIZACAO, AMORTIZACAO_DATA_ATUAL } from '../../util/constants'
+import {
+  getCurrentDate,
+  formatDate,
+  formatCurrency,
+  getLastLine,
+  verifyNumber,
+  getQtdDias,
+} from "../../util/util";
+import {
+  LANGUAGEM_TABLE,
+  LISTA_AMORTIZACAO,
+  AMORTIZACAO_DATA_ATUAL,
+} from "../../util/constants";
 
 declare interface TableData {
   dataRows: Array<Object>;
 }
 
 @Component({
-  selector: 'app-amortizacao',
-  templateUrl: './amortizacao.component.html'
+  selector: "app-amortizacao",
+  templateUrl: "./amortizacao.component.html",
 })
 export class AmortizacaoComponent implements OnInit {
   @Input() pesquisaFormValid: boolean;
@@ -23,51 +34,50 @@ export class AmortizacaoComponent implements OnInit {
   tableLoading = false;
   updateLoading = false;
   alertType = {
-    mensagem: '',
-    tipo: ''
+    mensagem: "",
+    tipo: "",
   };
 
   preFormAmortizacao: FormGroup;
   dtOptionsAmortizacao: DataTables.Settings = {};
   amortizacao_field = LISTA_AMORTIZACAO;
 
-  constructor(
-    private formBuilder: FormBuilder
-  ) { }
+  constructor(private formBuilder: FormBuilder) {}
 
   ngOnInit(): void {
     this.preFormAmortizacao = this.formBuilder.group({
-      data_vencimento: [''],
-      saldo_devedor: ['', Validators.required],
-      tipo: ['', Validators.required],
+      data_vencimento: [""],
+      saldo_devedor: ["", Validators.required],
+      tipo: ["", Validators.required],
     });
 
     this.dtOptionsAmortizacao = {
       paging: false,
       searching: false,
       ordering: false,
-      scrollY: '300px',
+      scrollY: "300px",
       scrollCollapse: true,
-      language: LANGUAGEM_TABLE
-    }
-
+      language: LANGUAGEM_TABLE,
+    };
   }
 
   formatCurrency(value) {
-    return formatCurrency(value)
+    return formatCurrency(value);
   }
 
   formatCurrencyAmortizacao(value) {
     const amortizacao = this.formatCurrency(value);
-    return typeof (parseFloat(value)) === 'number' && parseFloat(value) !== 0 ? `(${amortizacao})` : "---";
+    return typeof parseFloat(value) === "number" && parseFloat(value) !== 0
+      ? `(${amortizacao})`
+      : "---";
   }
 
   verifyNumber(value) {
-    verifyNumber(value)
+    verifyNumber(value);
   }
 
-  formatDate(value, format = 'DD/MM/YYYY') {
-    return formatDate(value, format)
+  formatDate(value, format = "DD/MM/YYYY") {
+    return formatDate(value, format);
   }
 
   adicionarAmortizacao() {
@@ -75,7 +85,10 @@ export class AmortizacaoComponent implements OnInit {
 
     switch (preFATipo) {
       case AMORTIZACAO_DATA_ATUAL:
-        this.preFormAmortizacao.value.data_vencimento = this.formatDate(this.dataCalculo, 'YYYY-MM-DD')
+        this.preFormAmortizacao.value.data_vencimento = this.formatDate(
+          this.dataCalculo,
+          "YYYY-MM-DD"
+        );
         break;
 
       default:
@@ -84,12 +97,11 @@ export class AmortizacaoComponent implements OnInit {
 
     this.tableDataAmortizacao.dataRows.push(this.preFormAmortizacao.value);
 
-    this.incluirAmortizacao.emit(this.tableDataAmortizacao.dataRows)
+    this.incluirAmortizacao.emit(this.tableDataAmortizacao.dataRows);
     this.preFormAmortizacao.reset();
 
     // const preFATipo = this.pre_form_amortizacao.tipo.value;
     // const preFASaldoDevedor = this.pre_form_amortizacao.saldo_devedor.value;
-
 
     // switch (preFATipo) {
     //   case 'Data do Cálculo':
@@ -168,17 +180,17 @@ export class AmortizacaoComponent implements OnInit {
     //   default:
     //     break;
     // }
-
-
-
   }
 
   deleteRowAmortizacao(row) {
-    let index = this.tableDataAmortizacao.dataRows.indexOf(row);
+    const index = this.tableDataAmortizacao.dataRows.indexOf(row);
     this.tableDataAmortizacao.dataRows.splice(index, 1);
 
     setTimeout(() => {
-      this.deleteAmortizacao.emit({ 0: row, 1: this.tableDataAmortizacao.dataRows })
+      this.deleteAmortizacao.emit({
+        0: row,
+        1: this.tableDataAmortizacao.dataRows,
+      });
     }, 0);
 
     // if (amortizacao.hasOwnProperty('pagoIndex')) {
@@ -221,5 +233,7 @@ export class AmortizacaoComponent implements OnInit {
     // }, 0)
   }
 
-  get pre_form_amortizacao() { return this.preFormAmortizacao.controls; }
+  get pre_form_amortizacao() {
+    return this.preFormAmortizacao.controls;
+  }
 }

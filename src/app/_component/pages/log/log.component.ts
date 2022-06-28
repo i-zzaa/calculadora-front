@@ -1,37 +1,36 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { LogService } from '../../../_services/log.service';
-import * as moment from 'moment';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { PastasContratosService } from '../../../_services/pastas-contratos.service';
-import { DataTableDirective } from 'angular-datatables';
-import 'datatables.net';
-import 'datatables.net-buttons';
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { LogService } from "../../../_services/log.service";
+import * as moment from "moment";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { PastasContratosService } from "../../../_services/pastas-contratos.service";
+import { DataTableDirective } from "angular-datatables";
+import "datatables.net";
+import "datatables.net-buttons";
 
-import { formatDate, formatCurrency, verifyNumber } from '../../util/util';
-import { LANGUAGEM_TABLE } from '../../util/constants'
+import { formatDate, formatCurrency, verifyNumber } from "../../util/util";
+import { LANGUAGEM_TABLE } from "../../util/constants";
 
 declare interface TableData {
   dataRows: Array<Object>;
 }
 
 @Component({
-  selector: 'app-log',
-  templateUrl: './log.component.html'
+  selector: "app-log",
+  templateUrl: "./log.component.html",
 })
 export class LogComponent implements OnInit {
-
   tableLoading = false;
   updateLoading = false;
   alertType = {
-    mensagem: '',
-    tipo: ''
+    mensagem: "",
+    tipo: "",
   };
   row: [];
   infoContrato = {
-    pasta: '',
-    contrato: '',
-    tipo_contrato: '',
-    recuperacaoJudicial: false
+    pasta: "",
+    contrato: "",
+    tipo_contrato: "",
+    recuperacaoJudicial: false,
   };
 
   tableData: TableData;
@@ -46,46 +45,50 @@ export class LogComponent implements OnInit {
     private logService: LogService,
     private formBuilder: FormBuilder,
     private pastasContratosService: PastasContratosService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.logForm = this.formBuilder.group({
-      log_pasta: ['', Validators.required],
-      log_contrato: ['', Validators.required],
-      log_tipo_contrato: ['', Validators.required]
+      log_pasta: ["", Validators.required],
+      log_contrato: ["", Validators.required],
+      log_tipo_contrato: ["", Validators.required],
     });
 
     this.tableData = {
-      dataRows: []
-    }
+      dataRows: [],
+    };
     this.dtOptions = {
       paging: true,
       scrollCollapse: true,
       language: LANGUAGEM_TABLE,
       processing: true,
       drawCallback: (settings) => {
-        var tr = $(this).closest('tr');
-
+        const tr = $(this).closest("tr");
       },
       rowCallback: (row: Node, data: any[] | Object, index: number) => {
         // Unbind first in order to avoid any duplicate handler
         // (see https://github.com/l-lin/angular-datatables/issues/87)
 
-        $('.details-control', row).unbind('click');
-        $('.details-control', row).bind('click', (el) => {
-          this.datatableElement.dtInstance.then((dtInstance: DataTables.Api) => {
-            let selectedRow = dtInstance.row($(row));
+        $(".details-control", row).unbind("click");
+        $(".details-control", row).bind("click", (el: any) => {
+          this.datatableElement.dtInstance.then(
+            (dtInstance: DataTables.Api) => {
+              const selectedRow = dtInstance.row($(row));
 
-            el.currentTarget.children[0].classList.toggle('nc-minimal-right')
-            el.currentTarget.children[0]['style'].color = el.currentTarget.children[0]['style'].color === 'red' ? 'green' : 'red';
-            el.currentTarget.children[0].classList.toggle('nc-minimal-down')
+              el.currentTarget.children[0].classList.toggle("nc-minimal-right");
+              el.currentTarget.children[0].style.color =
+                el.currentTarget.children[0].style.color === "red"
+                  ? "green"
+                  : "red";
+              el.currentTarget.children[0].classList.toggle("nc-minimal-down");
 
-            if (selectedRow.child.isShown()) {
-              selectedRow.child.hide();
-            } else {
-              selectedRow.child(this.detailsRow(this.row)).show();
+              if (selectedRow.child.isShown()) {
+                selectedRow.child.hide();
+              } else {
+                selectedRow.child(this.detailsRow(this.row)).show();
+              }
             }
-          });
+          );
         });
         return row;
       },
@@ -118,23 +121,23 @@ export class LogComponent implements OnInit {
   }
 
   formatCurrency(value) {
-    return formatCurrency(value)
+    return formatCurrency(value);
   }
 
   verifyNumber(value) {
-    verifyNumber(value)
+    verifyNumber(value);
   }
 
-  formatDate(value, format = 'DD/MM/YYYY') {
-    return formatDate(value, format)
+  formatDate(value, format = "DD/MM/YYYY") {
+    return formatDate(value, format);
   }
 
   toggleDetails(row) {
-    this.row = row.infoTabela
+    this.row = row.infoTabela;
   }
 
   detailsRow(item: any) {
-    const tableCheque = item
+    const tableCheque = item;
     return tableCheque;
   }
 
@@ -150,35 +153,41 @@ export class LogComponent implements OnInit {
     this.infoContrato = infoContrato;
     this.tableData.dataRows = [];
 
-    this.logService.getLog(
-      this.infoContrato.pasta,
-      this.infoContrato.contrato,
-      this.infoContrato.tipo_contrato,
-      this.infoContrato.recuperacaoJudicial
-    ).subscribe(logs => {
-      if (!logs['data'].length) {
-        this.alertType = {
-          mensagem: 'Nenhuma registro encontrado!',
-          tipo: 'warning'
-        };
+    this.logService
+      .getLog(
+        this.infoContrato.pasta,
+        this.infoContrato.contrato,
+        this.infoContrato.tipo_contrato,
+        this.infoContrato.recuperacaoJudicial
+      )
+      .subscribe(
+        (logs: any) => {
+          if (!logs.data.length) {
+            this.alertType = {
+              mensagem: "Nenhuma registro encontrado!",
+              tipo: "warning",
+            };
 
-        this.tableLoading = false;
-        this.toggleUpdateLoading()
-        return;
-      }
+            this.tableLoading = false;
+            this.toggleUpdateLoading();
+            return;
+          }
 
-      this.tableData.dataRows = logs['data'];
-      this.tableLoading = false;
-
-    }, err => {
-      this.alertType = {
-        mensagem: 'Nenhuma registro encontrado!',
-        tipo: 'warning'
-      };
-      this.tableLoading = false;
-      this.toggleUpdateLoading()
-    });
+          this.tableData.dataRows = logs.data;
+          this.tableLoading = false;
+        },
+        (err) => {
+          this.alertType = {
+            mensagem: "Nenhuma registro encontrado!",
+            tipo: "warning",
+          };
+          this.tableLoading = false;
+          this.toggleUpdateLoading();
+        }
+      );
   }
 
-  get log_form() { return this.logForm.controls; }
+  get log_form() {
+    return this.logForm.controls;
+  }
 }

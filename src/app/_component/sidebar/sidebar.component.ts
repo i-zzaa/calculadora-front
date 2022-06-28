@@ -37,7 +37,7 @@ export const ROUTES: RouteInfo[] = [
   templateUrl: "sidebar.component.html",
 })
 export class SidebarComponent implements OnInit {
-  public username: string = localStorage.getItem("username");
+  public username = "Calculadora"; // localStorage.getItem("username");
   public menuItems: any[];
   ngOnInit() {
     this.menuItems = ROUTES.filter((menuItem) => menuItem);

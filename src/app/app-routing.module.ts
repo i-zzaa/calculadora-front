@@ -13,6 +13,7 @@ const routes: Routes = [
   {
     path: "",
     component: AdminLayoutComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: "user",
@@ -38,6 +39,7 @@ const routes: Routes = [
         path: "log",
         component: LogComponent,
       },
+      { path: "", redirectTo: "/", pathMatch: "full" },
     ],
   },
   {

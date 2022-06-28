@@ -131,23 +131,23 @@ export class ChequeEmpresarialComponent implements OnInit {
           exportOptions: {
             columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
           },
-          customize: (doc) => {
-            doc["defaultStyle"] = { ...doc["defaultStyle"], fontSize: 8 };
-            doc["styles"]["tableHeader"] = {
-              ...doc["styles"]["tableHeader"],
+          customize: (doc: any) => {
+            doc.defaultStyle = { ...doc.defaultStyle, fontSize: 8 };
+            doc.styles.tableHeader = {
+              ...doc.styles.tableHeader,
               fontSize: 8,
               color: "black",
               fillColor: "white",
             };
-            doc["styles"]["tableFooter"] = {
-              ...doc["styles"]["tableFooter"],
+            doc.styles.tableFooter = {
+              ...doc.styles.tableFooter,
               fontSize: 8,
               color: "black",
               fillColor: "white",
             };
 
-            doc["content"][0].text = "MOVIMENTAÇÕES POSTERIORES AO VENCIMENTO";
-            doc["content"][1]["table"]["widths"] = [
+            doc.content[0].text = "MOVIMENTAÇÕES POSTERIORES AO VENCIMENTO";
+            doc.content[1].table.widths = [
               80,
               100,
               40,
@@ -164,7 +164,7 @@ export class ChequeEmpresarialComponent implements OnInit {
               "auto",
             ];
 
-            const footer = doc["content"][1]["table"]["body"].pop();
+            const footer = doc.content[1].table.body.pop();
             const valor = footer.pop();
             footer.map((value, index) => {
               if (index !== 0) {
@@ -172,21 +172,22 @@ export class ChequeEmpresarialComponent implements OnInit {
               }
             });
             footer.push(valor);
-            doc["content"][1]["table"]["body"].push(footer);
+            doc.content[1].table.body.push(footer);
 
-            doc["content"][1]["table"]["body"].map((row, index) => {
+            doc.content[1].table.body.map((row: any, index: number) => {
               if (
                 index !== 0 &&
                 this.tableData.dataRows.length - 1 >= index - 1
               ) {
-                row[1].text = this.tableData.dataRows[index - 1]["indiceDB"];
-                row[4].text = this.tableData.dataRows[index - 1]["indiceBA"];
+                const dataRows: any = this.tableData.dataRows[index - 1];
+                row[1].text = dataRows.indiceDB;
+                row[4].text = dataRows.indiceBA;
 
                 row.map((item) => (item.alignment = "center"));
               }
             });
 
-            doc["content"].push({
+            doc.content.push({
               style: { fontSize: 10 },
               alignment: "left",
               margin: [0, 20, 10, 0],
@@ -195,7 +196,7 @@ export class ChequeEmpresarialComponent implements OnInit {
               }% : ${formatCurrency(this.total_honorarios)}`,
             });
 
-            doc["content"].push({
+            doc.content.push({
               style: { fontSize: 10 },
               alignment: "left",
               margin: [0, 0, 10, 0],
@@ -204,7 +205,7 @@ export class ChequeEmpresarialComponent implements OnInit {
               }% : ${formatCurrency(this.total_multa_sob_contrato)}`,
             });
 
-            doc["content"].push({
+            doc.content.push({
               style: { fontSize: 10 },
               alignment: "left",
               margin: [0, 0, 10, 0],
@@ -239,16 +240,18 @@ export class ChequeEmpresarialComponent implements OnInit {
         table = table.replace(/log-visible-false/g, "log-visible-true ");
         table = table.replace(/log-hidden-false/g, "log-hidden-true ");
         clearInterval(inter);
+
+        const info: any = this.infoContrato;
         this.logService
           .addLog([
             {
               data: getCurrentDate("YYYY-MM-DD"),
               usuario: window.localStorage.getItem("username").toUpperCase(),
-              pasta: this.infoContrato["pasta"],
-              contrato: this.infoContrato["contrato"],
-              tipoContrato: this.infoContrato["tipo_contrato"],
+              pasta: info.pasta,
+              contrato: info.contrato,
+              tipoContrato: info.tipo_contrato,
               dataSimulacao: this.form_riscos.formDataCalculo,
-              acao: acao,
+              acao,
               infoTabela: table,
               modulo: CHEQUE_EMPRESARIAL,
             },
@@ -282,33 +285,31 @@ export class ChequeEmpresarialComponent implements OnInit {
   atualizarRisco() {
     this.controleLancamentos = 0;
 
-    const payload = this.tableData.dataRows.map((lancamento) => {
-      if (!lancamento["isTipoLancamento"]) return;
+    const payload = this.tableData.dataRows.map((lancamento: any) => {
+      if (!lancamento.isTipoLancamento) {
+        return;
+      }
 
       this.updateLoadingBtn = true;
-      let lancamentoLocal = { ...lancamento };
-      lancamentoLocal["encargosMonetarios"] = JSON.stringify(
-        lancamentoLocal["encargosMonetarios"]
+      const lancamentoLocal = { ...lancamento };
+      lancamentoLocal.encargosMonetarios = JSON.stringify(
+        lancamentoLocal.encargosMonetarios
       );
 
       this.formDefaultValues["infoContrato"] = this.infoContrato;
-      lancamentoLocal["infoParaCalculo"] = JSON.stringify(
-        this.formDefaultValues
+      lancamentoLocal.infoParaCalculo = JSON.stringify(this.formDefaultValues);
+      lancamentoLocal.valorDevedor = parseFloat(lancamentoLocal.valorDevedor);
+      lancamentoLocal.valorDevedorAtualizado = parseFloat(
+        lancamentoLocal.valorDevedorAtualizado
       );
-      lancamentoLocal["valorDevedor"] = parseFloat(
-        lancamentoLocal["valorDevedor"]
-      );
-      lancamentoLocal["valorDevedorAtualizado"] = parseFloat(
-        lancamentoLocal["valorDevedorAtualizado"]
-      );
-      lancamentoLocal["contractRef"] = this.contractRef;
-      lancamentoLocal["ultimaAtualizacao"] = getCurrentDate("YYYY-MM-DD");
+      lancamentoLocal.contractRef = this.contractRef;
+      lancamentoLocal.ultimaAtualizacao = getCurrentDate("YYYY-MM-DD");
 
       return lancamentoLocal;
     });
 
     const payloadPut = payload.filter(
-      (lancamento) => lancamento && lancamento["id"]
+      (lancamento) => lancamento && lancamento.id
     );
     payloadPut.length > 0 &&
       this.chequeEmpresarialService.updateLancamento(payloadPut).subscribe(
@@ -321,7 +322,7 @@ export class ChequeEmpresarialComponent implements OnInit {
       );
 
     const payloadPost = payload.filter(
-      (lancamento) => lancamento && !lancamento["id"]
+      (lancamento) => lancamento && !lancamento.id
     );
     payloadPost.length > 0 &&
       this.chequeEmpresarialService.addLancamento(payloadPost).subscribe(
@@ -386,11 +387,11 @@ export class ChequeEmpresarialComponent implements OnInit {
     const localDataBase =
       this.tableData.dataRows.length === 0
         ? lancamento.ceFA_data_vencimento.value
-        : lastLine["dataBaseAtual"];
+        : lastLine.dataBaseAtual;
     const localValorDevedor =
       this.tableData.dataRows.length === 0
         ? lancamento.ceFa_saldo_devedor.value
-        : lastLine["valorDevedorAtualizado"];
+        : lastLine.valorDevedorAtualizado;
 
     this.total_date_now = formatDate(localDataBase);
     this.total_data_calculo =
@@ -460,7 +461,7 @@ export class ChequeEmpresarialComponent implements OnInit {
           contractRef: this.contractRef,
           ultimaAtualizacao: "",
           infoParaCalculo: { ...localInfoParaCalculo },
-          isTipoLancamento: isTipoLancamento,
+          isTipoLancamento,
           modulo: CHEQUE_EMPRESARIAL,
         };
         this.tableData.dataRows.push(this.payloadLancamento);
@@ -470,7 +471,7 @@ export class ChequeEmpresarialComponent implements OnInit {
           !this.lancamentoInfo() &&
           isTipoLancamento &&
           Object.keys(lastLine).length &&
-          !lastLine["isTipoLancamento"]
+          !lastLine.isTipoLancamento
         ) {
           this.tableData.dataRows.push(lastLine);
         }
@@ -502,7 +503,7 @@ export class ChequeEmpresarialComponent implements OnInit {
     this.chequeEmpresarialService.getAll().subscribe(
       (chequeEmpresarialList) => {
         this.tableData.dataRows = chequeEmpresarialList
-          .filter((row) => row["contractRef"] === infoContrato.contractRef)
+          .filter((row) => row.contractRef === infoContrato.contractRef)
           .map((cheque) => {
             cheque.encargosMonetarios = JSON.parse(cheque.encargosMonetarios);
             cheque.infoParaCalculo = JSON.parse(cheque.infoParaCalculo);
@@ -565,8 +566,8 @@ export class ChequeEmpresarialComponent implements OnInit {
     });
 
     Promise.all([getIndice]).then((resultado) => {
-      row["dataBaseAtual"] = data;
-      row["indiceDataBaseAtual"] = resultado[0];
+      row.dataBaseAtual = data;
+      row.indiceDataBaseAtual = resultado[0];
       setTimeout(() => {
         this.simularCalc(true);
       }, 0);
@@ -603,18 +604,18 @@ export class ChequeEmpresarialComponent implements OnInit {
     }
 
     setTimeout(() => {
-      this.tableData.dataRows.map(async (row, index) => {
+      this.tableData.dataRows.map(async (row: any, index) => {
         if (!isInlineChange) {
           const indice = this.formDefaultValues.formIndice;
-          row["indiceDB"] = indice;
-          row["indiceBA"] = indice;
+          row.indiceDB = indice;
+          row.indiceBA = indice;
         }
 
         const getIndiceDataBase = new Promise((res, rej) => {
           this.indicesService
             .getIndiceDataBase(
-              row["indiceDB"],
-              row["dataBase"],
+              row.indiceDB,
+              row.dataBase,
               this.formDefaultValues
             )
             .then((data) => {
@@ -625,8 +626,8 @@ export class ChequeEmpresarialComponent implements OnInit {
         const getIndiceDataBaseAtual = new Promise((res, rej) => {
           this.indicesService
             .getIndiceDataBase(
-              row["indiceBA"],
-              row["dataBaseAtual"],
+              row.indiceBA,
+              row.dataBaseAtual,
               this.formDefaultValues
             )
             .then((data) => {
@@ -636,37 +637,35 @@ export class ChequeEmpresarialComponent implements OnInit {
 
         Promise.all([getIndiceDataBase, getIndiceDataBaseAtual]).then(
           (resultado) => {
-            row["indiceDataBase"] = resultado[0];
-            row["indiceDataBaseAtual"] = resultado[1];
+            row.indiceDataBase = resultado[0];
+            row.indiceDataBaseAtual = resultado[1];
             if (index > 0) {
-              row["valorDevedor"] = this.tableData.dataRows[index - 1][
-                "valorDevedorAtualizado"
-              ];
-              row["dataBase"] = this.tableData.dataRows[index - 1][
-                "dataBaseAtual"
-              ];
+              row.valorDevedor =
+                this.tableData.dataRows[index - 1]["valorDevedorAtualizado"];
+              row.dataBase =
+                this.tableData.dataRows[index - 1]["dataBaseAtual"];
             }
 
-            let dias = getQtdDias(
-              formatDate(row["dataBase"]),
-              formatDate(row["dataBaseAtual"])
+            const dias = getQtdDias(
+              formatDate(row.dataBase),
+              formatDate(row.dataBaseAtual)
             );
             const qtdDias = isVincenda(
-              formatDate(row["dataBase"], "YYYY-MM-DD"),
-              formatDate(row["dataBaseAtual"], "YYYY-MM-DD")
+              formatDate(row.dataBase, "YYYY-MM-DD"),
+              formatDate(row.dataBaseAtual, "YYYY-MM-DD")
             )
               ? -dias
               : dias;
 
-            const valorDevedor = parseFloat(row["valorDevedor"]);
+            const valorDevedor = parseFloat(row.valorDevedor);
 
-            const indiceDataBaseAtual = row["indiceDataBaseAtual"];
-            const indiceDataBase = row["indiceDataBase"];
+            const indiceDataBaseAtual = row.indiceDataBaseAtual;
+            const indiceDataBase = row.indiceDataBase;
 
             let correcao;
             if (
               this.formDefaultValues.formIndice === "Encargos Contratuais %" ||
-              row["infoParaCalculo"]["formIndice"] === "Encargos Contratuais %"
+              row.infoParaCalculo.formIndice === "Encargos Contratuais %"
             ) {
               correcao =
                 ((valorDevedor * (indiceDataBaseAtual / 100)) / 30) * qtdDias;
@@ -676,28 +675,24 @@ export class ChequeEmpresarialComponent implements OnInit {
                 valorDevedor;
             }
 
-            const correcaoPeloIndice = (row["encargosMonetarios"][
-              "correcaoPeloIndice"
-            ] = parseFloat(correcao));
-            const valorLancado = row["isTipoLancamento"]
-              ? row["lancamentos"]
-              : 0;
+            const correcaoPeloIndice =
+              (row.encargosMonetarios.correcaoPeloIndice =
+                parseFloat(correcao));
+            const valorLancado = row.isTipoLancamento ? row.lancamentos : 0;
             const lancamento =
-              row["tipoLancamento"] === "credit"
+              row.tipoLancamento === "credit"
                 ? valorLancado * -1
                 : valorLancado;
 
             // -- dias
-            row["encargosMonetarios"]["jurosAm"]["dias"] = qtdDias;
+            row.encargosMonetarios.jurosAm.dias = qtdDias;
             // -- juros
-            row["encargosMonetarios"]["jurosAm"]["percentsJuros"] = (
+            row.encargosMonetarios.jurosAm.percentsJuros = (
               (this.formDefaultValues.formJuros / 30) *
               qtdDias
             ).toFixed(2);
             // -- moneyValue
-            const moneyValue = (row["encargosMonetarios"]["jurosAm"][
-              "moneyValue"
-            ] =
+            const moneyValue = (row.encargosMonetarios.jurosAm.moneyValue =
               ((valorDevedor + correcaoPeloIndice) / 30) *
               qtdDias *
               (this.formDefaultValues.formJuros / 100));
@@ -705,17 +700,17 @@ export class ChequeEmpresarialComponent implements OnInit {
             // -- multa
             let multa = 0;
             if (index === 0) {
-              row["encargosMonetarios"]["multa"] =
+              row.encargosMonetarios.multa =
                 (valorDevedor + correcaoPeloIndice + moneyValue) *
                 (this.formDefaultValues.formMulta / 100);
               multa =
                 (valorDevedor + correcaoPeloIndice + moneyValue) *
                 (this.formDefaultValues.formMulta / 100);
             } else {
-              row["encargosMonetarios"]["multa"] = "NaN";
+              row.encargosMonetarios.multa = "NaN";
             }
 
-            const valorDevedorAtualizado = (row["valorDevedorAtualizado"] =
+            const valorDevedorAtualizado = (row.valorDevedorAtualizado =
               valorDevedor +
               correcaoPeloIndice +
               moneyValue +
@@ -733,11 +728,11 @@ export class ChequeEmpresarialComponent implements OnInit {
                 (this.formDefaultValues.formHonorarios / 100));
 
               this.last_data_table = getLastLine(this.tableData.dataRows);
-              let last_date_base_atual = Object.keys(this.last_data_table)
+              const last_date_base_atual = Object.keys(this.last_data_table)
                 .length
                 ? this.last_data_table["dataBaseAtual"]
                 : this.total_date_now;
-              let last_date_base = Object.keys(this.last_data_table).length
+              const last_date_base = Object.keys(this.last_data_table).length
                 ? this.last_data_table["dataBase"]
                 : this.total_date_now;
 
@@ -745,9 +740,8 @@ export class ChequeEmpresarialComponent implements OnInit {
               this.total_data_calculo = formatDate(last_date_base_atual);
               this.min_data = last_date_base_atual;
 
-              this.total_subtotal = this.last_data_table[
-                "valorDevedorAtualizado"
-              ];
+              this.total_subtotal =
+                this.last_data_table["valorDevedorAtualizado"];
               const valorDevedorAtualizadoLast = parseFloat(
                 this.last_data_table["valorDevedorAtualizado"]
               );

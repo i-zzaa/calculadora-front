@@ -110,7 +110,7 @@
     }
 
     .nav{
-        margin-top: 40px;
+        margin-top: 20px;
         display: block;
 
         .caret{
@@ -228,7 +228,7 @@
         &:after{
             content: '';
             position: absolute;
-            bottom: -1.8rem;
+            bottom: 0rem;
             right: 15px;
             height: 1px;
             width: calc(100% - 30px);

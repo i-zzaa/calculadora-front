@@ -1,274 +1,537 @@
-<div class="row ">
-    <app-notificacao [mensagem]="alertType.mensagem" [tipo]="alertType.tipo" [show]="updateLoading"></app-notificacao>
+<div class="row">
+  <app-notificacao
+    [mensagem]="alertType.mensagem"
+    [tipo]="alertType.tipo"
+    [show]="updateLoading"
+  ></app-notificacao>
 
-    <div class="col-md-12">
-        <div class="card ">
-            <div class="card-header ">
-                <!--<h5 class="card-title">Cheque Empresarial / Conta Garantida</h5>-->
-            </div>
-            <div class="card-body ">
-                <div class="row">
-                    <div class="col-md-12">
-                        <app-pesquisa (contractRef)="pesquisarContratos($event)" [tableLoading]="tableLoading" (resetForm)="simulacao.resetForm($event)"></app-pesquisa>
-                    </div>
-
-                    <div class="col-md-12 col-sm-12">
-                        <app-simulacao #simulacao [updateLoadingBtn]="updateLoadingBtn" [tableDataLength]="tableData.dataRows.length > 0" (salvar)="atualizarRisco()" [ultimaAtualizacao]="ultima_atualizacao" (simularCalculo)="simularCalc(false, 'btn')" (formValue)="setFormRiscos($event)">
-                        </app-simulacao>
-                    </div>
-                    <div class="col-lg-12  mt-3">
-                        <hr>
-                    </div>
-                    <div class="col-lg-12 col-sm-12">
-                        <form class="row" [formGroup]="ceFormAmortizacao">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="row">
-
-                                    <div class="col-md-3 col-sm-12">
-                                        <label for="nome" class="col-form-label">Data Vencimento</label>
-                                        <input *ngIf="(tableData.dataRows.length === 0)" type="date" class="form-control col-md-12 col-sm-12" name="ceFA_data_vencimento" id="ceFA_data_vencimento" formControlName="ceFA_data_vencimento" max="3000-12-31" min="1000-01-01">
-                                        <p *ngIf="!(tableData.dataRows.length === 0)">
-                                            {{formatDate(tableData.dataRows[0]['dataBase'])}}
-                                        </p>
-                                    </div>
-                                    <div class="col-md-3 col-sm-12">
-                                        <label for="nome" class="col-form-label">Saldo Devedor</label>
-                                        <input *ngIf="(tableData.dataRows.length === 0)" type="number" (change)="verifyNumber($event)" min="0" class="form-control col-md-12 col-sm-12" name="ceFa_saldo_devedor" style="height: 35px" id="ceFa_saldo_devedor" formControlName="ceFa_saldo_devedor">
-                                        <p *ngIf="!(tableData.dataRows.length === 0)">
-                                            {{formatCurrency(tableData.dataRows[0]["valorDevedor"])}}
-                                        </p>
-                                    </div>
-                                    <div class="col-md-6 col-sm-12">
-                                        <fieldset class="form-group ml-3">
-                                            <div class="form-group row">
-                                                <legend class="col-form-label">
-                                                    <label class="form-check-label" for="profile2">Tipo</label>
-                                                </legend>
-                                                <div>
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="ceFA_tipo" formControlName="ceFA_tipo" id="ceFA_tipo1" [value]="'lancamento'">
-                                                        <label class="form-check-label" for="ceFA_tipo1" style="margin: -30px">
-                                                            Incluir Novo Lançamento
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check form-check-inline ml-5" title="{{tableData.dataRows.length === 0 ? 'Para habilitar essa opção é necessário ter ao menos um  lançamento' : null}}">
-                                                        <input class="form-check-input" type="radio" name="ceFA_tipo" formControlName="ceFA_tipo" id="ceFA_tipo2" [value]="'atualizacao'" [attr.disabled]="tableData.dataRows.length === 0 ? true : null">
-                                                        <label class="form-check-label" for="ceFA_tipo2" style="margin: -30px">
-                                                            Atualizar Cálculo
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-12 col-sm-12">
-                                <div class="row">
-                                    <div class="col-md-3 col-sm-12">
-                                        <label for="nome" class="col-form-label">Data Base Atual</label>
-                                        <input type="date" class="form-control col-md-12 col-sm-12" name="ceFA_data_base_atual" id="ceFA_data_base_atual" formControlName="ceFA_data_base_atual" min="{{min_data}}">
-                                    </div>
-                                    <div class="col-md-3 col-sm-12" [hidden]="ce_form_amortizacao.ceFA_tipo.value !== 'lancamento'">
-                                        <label for="nome" class="col-form-label">Valor Lançamento</label>
-                                        <input type="number" (change)="verifyNumber($event)" min="0" class="form-control col-md-12 col-sm-12" name="ceFA_valor_lancamento" style="height: 35px" id="ceFA_valor_lancamento" formControlName="ceFA_valor_lancamento">
-                                    </div>
-                                    <div class="col-md-6 col-sm-12" [hidden]="ce_form_amortizacao.ceFA_tipo.value !== 'lancamento'">
-                                        <fieldset class="form-group ml-3">
-                                            <div class="form-group row">
-                                                <legend class="col-form-label">
-                                                    <label class="form-check-label" for="profile2">Tipo de
-                                                        Lançamento</label>
-                                                </legend>
-                                                <div>
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="ceFA_tipo_lancamento" formControlName="ceFA_tipo_lancamento" id="status1" [value]="'credit'">
-                                                        <label class="form-check-label" for="status1" style="margin: -30px">
-                                                            Crédito
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check form-check-inline ml-5">
-                                                        <input class="form-check-input" type="radio" name="ceFA_tipo_lancamento" formControlName="ceFA_tipo_lancamento" id="status2" [value]="'debit'">
-                                                        <label class="form-check-label" for="status2" style="margin: -30px">
-                                                            Débito
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-12 mt-2">
-                                <div class="col-lg-12" style="padding: 0">
-                                    <div class="stats">
-                                        <button type="button" (click)="incluirLancamentos()" class="btn btn-info btn-round" [disabled]="!ceFormAmortizacao.valid">Incluir
-                                            Lançamentos</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <br>
-                <div class="d-flex justify-content-center" *ngIf="tableLoading && (tableData.dataRows.length === 0)">
-                    <div class="spinner-grow text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-12 col-sm-12 pt-0" *ngIf="!(tableData.dataRows.length === 0)">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <!--<h5 class="card-title">Cheque Empresarial / Conta Garantida</h5>-->
+      </div>
+      <div class="card-body">
         <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">MOVIMENTAÇÕES POSTERIORES AO VENCIMENTO</h4>
-                    </div>
-                    <div class="card-body" style="max-height: 100vh;overflow: scroll;">
-                        <table [dtOptions]="dtOptions" datatable class="table table-hover" id="tableCheque" *ngIf="tableData && tableData.dataRows && !tableLoading" style="width:100%">
-                            <thead>
-                                <tr align="center">
-                                    <th colspan="7"></th>
-                                    <th width="400" colspan="5">Encargos Moratórios</th>
-                                    <th colspan="6">
-                                    </th>
-                                </tr>
-                                <tr align="center">
-                                    <th class="align-title-top" rowspan="2">Data Base</th>
-                                    <th class="align-title-top" rowspan="2">Índice
-                                        <b>{{formDefaultValues.formIndice}}</b>
-                                    </th>
-                                    <th width="80" class="align-title-top" rowspan="2">Índice Data Base</th>
-                                    <th class="align-title-top" rowspan="2">Data Base Atual</th>
-                                    <th class="align-title-top" rowspan="2">Índice
-                                        <b>{{formDefaultValues.formIndice}}</b>
-                                    </th>
-                                    <th width="80" class="align-title-top" rowspan="2">Índice Data Base Atual</th>
-                                    <th class="align-title-top" rowspan="2">Valor devedor</th>
+          <div class="col-md-12">
+            <app-pesquisa
+              (contractRef)="pesquisarContratos($event)"
+              [tableLoading]="tableLoading"
+              (resetForm)="simulacao.resetForm($event)"
+            ></app-pesquisa>
+          </div>
 
-                                    <th width="100" rowspan="2">Correção pelo Índice</th>
-
-                                    <th colspan="3">Juros a.m. {{(formDefaultValues.formJuros || 0 ) + "%"}}
-                                    </th>
-
-                                    <th width="100" rowspan="2">Multa
-                                        <b>{{(formDefaultValues.formMulta || 0 ) + "%"}}</b>
-                                    </th>
-
-                                    <th class="align-title-top" rowspan="2">Lançamentos</th>
-                                    <th width="80" class="align-title-top" rowspan="2">Valor devedor atualizado</th>
-                                    <th width="80" class="align-title-top log-hidden-false" rowspan="2">Ação</th>
-                                </tr>
-                                <tr align="center">
-                                    <th>Dias</th>
-                                    <th>%</th>
-                                    <th>R$</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let row of tableData.dataRows" style="font-size: 11px;" align="center" [vincendas]="row" title="{{!row.isTipoLancamento ? 'Linha para fins informativo' : null}}">
-                                    <td>
-                                        <input type="date" style="font-size: 11px" class="form-control col-md-11 col-sm-12 log-hidden-false" [value]="row.dataBase" disabled>
-                                        <span class="log-visible-false">{{formatDate(row.dataBase)}}</span>
-                                    </td>
-                                    <td width="80">
-                                        <select [disabled]="!row.isTipoLancamento ? 'Linha para fins informativo' : null" style="width: 80px; font-size: 11px" class="form-control custom-select log-hidden-false" name="ce_indiceDB" id="ce_indiceDB" (change)="updateInlineIndice($event, row, 'indiceDB', 'indiceDataBase', 'dataBase')">
-                                            <option *ngFor="let indice of indice_field" [value]="indice"
-                                                [selected]="indice === row.indiceDB" >
-                                                {{indice}}</option>
-                                        </select>
-                                        <span class="log-visible-false">{{row.indiceDB}}</span>
-                                    </td>
-                                    <td>
-                                        {{row.indiceDataBase || "---"}}
-                                    </td>
-                                    <td width="120">
-                                        <input [disabled]="!row.isTipoLancamento ? 'Linha para fins informativo' : null" type="date" style="font-size: 11px" class="form-control col-md-11 col-sm-12 log-hidden-false" name="ce_data_calculo" max="3000-12-31" min="{{row.dataBase}}" [value]="row.dataBaseAtual"
-                                            (blur)="changeDate($event, row)">
-                                        <span class="log-visible-false">{{formatDate(row.dataBaseAtual)}}</span>
-                                    </td>
-                                    <td width="80">
-                                        <select [disabled]="!row.isTipoLancamento ? 'Linha para fins informativo' : null" style="width: 80px; font-size: 11px" class="form-control custom-select log-hidden-false" name="ce_indice" id="ce_indice" (change)="updateInlineIndice($event, row, 'indiceBA', 'indiceDataBaseAtual', 'dataBaseAtual')">
-                                            <option *ngFor="let indice of indice_field" [value]="indice"
-                                                [selected]="indice === row.indiceBA">
-                                                {{indice}}</option>
-                                        </select>
-                                        <span class="log-visible-false">{{row.indiceBA}}</span>
-
-                                    </td>
-                                    <td>
-                                        {{row.indiceDataBaseAtual || "---"}}
-                                    </td>
-                                    <td>
-                                        {{formatCurrency(row.valorDevedor)}}
-                                    </td>
-                                    <td>
-                                        {{formatCurrency(row.encargosMonetarios.correcaoPeloIndice)}}
-                                    </td>
-                                    <td>
-                                        {{row.encargosMonetarios.jurosAm.dias || 0}}
-                                    </td>
-                                    <td>
-                                        {{row.encargosMonetarios.jurosAm.percentsJuros}}
-                                    </td>
-                                    <td>
-                                        {{formatCurrency(row.encargosMonetarios.jurosAm.moneyValue)}}
-                                    </td>
-                                    <td>
-                                        {{formatCurrency(row.encargosMonetarios.multa)}}
-                                    </td>
-                                    <td>
-                                        {{row.tipoLancamento === 'debit' ? formatCurrency(row.lancamentos) : "(" + formatCurrency(row.lancamentos) + ")"}}
-                                    </td>
-                                    <td>
-                                        {{formatCurrency(row.valorDevedorAtualizado)}}
-                                    </td>
-                                    <td (click)="deleteRow(row)" class="log-hidden-false"><i style="color: red; cursor: pointer;" class="nc-icon nc-simple-remove"></i>
-                                    </td>
-                                </tr>
-
-                            </tbody>
-                            <tfoot>
-                                <tr class="parcelado-font-size">
-                                    <th [footer]="'left'" class="footer-title-table" colspan="7"> SUBTOTAL APURADO EM {{total_data_calculo || "---------"}}</th>
-                                    <th footer width="100" colspan="1"></th>
-                                    <th footer width="100" colspan="1"></th>
-                                    <th footer></th>
-                                    <th footer></th>
-                                    <th footer></th>
-                                    <th footer></th>
-                                    <th footer>{{formatCurrency(total_subtotal || 0)}}</th>
-                                    <th footer class="log-hidden-false"></th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                        <div class="d-flex justify-content-center" *ngIf="tableLoading" style="padding: 200px">
-                            <div class="spinner-grow text-primary" style="width: 4rem; height: 4rem;" role="status">
-                                <span class="sr-only">Loading...</span>
-                            </div>
+          <div class="col-md-12 col-sm-12">
+            <app-simulacao
+              #simulacao
+              [updateLoadingBtn]="updateLoadingBtn"
+              [tableDataLength]="tableData.dataRows.length > 0"
+              (salvar)="atualizarRisco()"
+              [ultimaAtualizacao]="ultima_atualizacao"
+              (simularCalculo)="simularCalc(false, 'btn')"
+              (formValue)="setFormRiscos($event)"
+            >
+            </app-simulacao>
+          </div>
+          <div class="col-lg-12 mt-3">
+            <hr />
+          </div>
+          <div class="col-lg-12 col-sm-12">
+            <form class="row" [formGroup]="ceFormAmortizacao">
+              <div class="col-md-12 col-sm-12">
+                <div class="row">
+                  <div class="col-md-3 col-sm-12">
+                    <label for="nome" class="col-form-label"
+                      >Data Vencimento</label
+                    >
+                    <input
+                      *ngIf="tableData.dataRows.length === 0"
+                      type="date"
+                      class="form-control col-md-12 col-sm-12"
+                      name="ceFA_data_vencimento"
+                      id="ceFA_data_vencimento"
+                      formControlName="ceFA_data_vencimento"
+                      max="3000-12-31"
+                      min="1000-01-01"
+                    />
+                    <p *ngIf="!(tableData.dataRows.length === 0)">
+                      {{ formatDate(tableData.dataRows[0]["dataBase"]) }}
+                    </p>
+                  </div>
+                  <div class="col-md-3 col-sm-12">
+                    <label for="nome" class="col-form-label"
+                      >Saldo Devedor</label
+                    >
+                    <input
+                      *ngIf="tableData.dataRows.length === 0"
+                      type="number"
+                      (change)="verifyNumber($event)"
+                      min="0"
+                      class="form-control col-md-12 col-sm-12"
+                      name="ceFa_saldo_devedor"
+                      style="height: 35px"
+                      id="ceFa_saldo_devedor"
+                      formControlName="ceFa_saldo_devedor"
+                    />
+                    <p *ngIf="!(tableData.dataRows.length === 0)">
+                      {{
+                        formatCurrency(tableData.dataRows[0]["valorDevedor"])
+                      }}
+                    </p>
+                  </div>
+                  <div class="col-md-6 col-sm-12">
+                    <fieldset class="form-group ml-3">
+                      <div class="form-group row">
+                        <legend class="col-form-label">
+                          <label class="form-check-label" for="profile2"
+                            >Tipo</label
+                          >
+                        </legend>
+                        <div>
+                          <div class="form-check form-check-inline">
+                            <input
+                              class="form-check-input"
+                              type="radio"
+                              name="ceFA_tipo"
+                              formControlName="ceFA_tipo"
+                              id="ceFA_tipo1"
+                              [value]="'lancamento'"
+                            />
+                            <label
+                              class="form-check-label"
+                              for="ceFA_tipo1"
+                              style="margin: -30px"
+                            >
+                              Incluir Novo Lançamento
+                            </label>
+                          </div>
+                          <div
+                            class="form-check form-check-inline ml-5"
+                            title="{{
+                              tableData.dataRows.length === 0
+                                ? 'Para habilitar essa opção é necessário ter ao menos um  lançamento'
+                                : null
+                            }}"
+                          >
+                            <input
+                              class="form-check-input"
+                              type="radio"
+                              name="ceFA_tipo"
+                              formControlName="ceFA_tipo"
+                              id="ceFA_tipo2"
+                              [value]="'atualizacao'"
+                              [attr.disabled]="
+                                tableData.dataRows.length === 0 ? true : null
+                              "
+                            />
+                            <label
+                              class="form-check-label"
+                              for="ceFA_tipo2"
+                              style="margin: -30px"
+                            >
+                              Atualizar Cálculo
+                            </label>
+                          </div>
                         </div>
-                    </div>
-                    <div class="card-footer" *ngIf="tableData.dataRows.length > 0 && !tableLoading">
-                        <div class="row">
-                            <div class="col-md-10">
-                                <!-- <p>Subtotal apurado em {{ subtotal_data_calculo || "---------"}}</p> -->
-                                <p>Honorários {{formDefaultValues.formHonorarios || 0}}%</p>
-                                <p>Multa sob contrato {{formDefaultValues.formMultaSobContrato || 0}}%</p>
-                                <p>TOTAL APURADO EM {{total_data_calculo || "---------"}}</p>
-                            </div>
-                            <div class="col-md-2">
-                                <!-- <p>{{formatCurrency(total_subtotal || 0)}}</p> -->
-                                <p>{{formatCurrency(total_honorarios || 0)}}</p>
-                                <p>{{formatCurrency(total_multa_sob_contrato || 0)}}</p>
-                                <p>{{formatCurrency(total_grandtotal || 0)}}</p>
-                            </div>
-                        </div>
-
-                    </div>
+                      </div>
+                    </fieldset>
+                  </div>
                 </div>
-            </div>
+              </div>
+              <div class="col-md-12 col-sm-12">
+                <div class="row">
+                  <div class="col-md-3 col-sm-12">
+                    <label for="nome" class="col-form-label"
+                      >Data Base Atual</label
+                    >
+                    <input
+                      type="date"
+                      class="form-control col-md-12 col-sm-12"
+                      name="ceFA_data_base_atual"
+                      id="ceFA_data_base_atual"
+                      formControlName="ceFA_data_base_atual"
+                      min="{{ min_data }}"
+                    />
+                  </div>
+                  <div
+                    class="col-md-3 col-sm-12"
+                    [hidden]="
+                      ce_form_amortizacao.ceFA_tipo.value !== 'lancamento'
+                    "
+                  >
+                    <label for="nome" class="col-form-label"
+                      >Valor Lançamento</label
+                    >
+                    <input
+                      type="number"
+                      (change)="verifyNumber($event)"
+                      min="0"
+                      class="form-control col-md-12 col-sm-12"
+                      name="ceFA_valor_lancamento"
+                      style="height: 35px"
+                      id="ceFA_valor_lancamento"
+                      formControlName="ceFA_valor_lancamento"
+                    />
+                  </div>
+                  <div
+                    class="col-md-6 col-sm-12"
+                    [hidden]="
+                      ce_form_amortizacao.ceFA_tipo.value !== 'lancamento'
+                    "
+                  >
+                    <fieldset class="form-group ml-3">
+                      <div class="form-group row">
+                        <legend class="col-form-label">
+                          <label class="form-check-label" for="profile2"
+                            >Tipo de Lançamento</label
+                          >
+                        </legend>
+                        <div>
+                          <div class="form-check form-check-inline">
+                            <input
+                              class="form-check-input"
+                              type="radio"
+                              name="ceFA_tipo_lancamento"
+                              formControlName="ceFA_tipo_lancamento"
+                              id="status1"
+                              [value]="'credit'"
+                            />
+                            <label
+                              class="form-check-label"
+                              for="status1"
+                              style="margin: -30px"
+                            >
+                              Crédito
+                            </label>
+                          </div>
+                          <div class="form-check form-check-inline ml-5">
+                            <input
+                              class="form-check-input"
+                              type="radio"
+                              name="ceFA_tipo_lancamento"
+                              formControlName="ceFA_tipo_lancamento"
+                              id="status2"
+                              [value]="'debit'"
+                            />
+                            <label
+                              class="form-check-label"
+                              for="status2"
+                              style="margin: -30px"
+                            >
+                              Débito
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </fieldset>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-12 mt-2">
+                <div class="col-lg-12" style="padding: 0">
+                  <div class="stats">
+                    <button
+                      type="button"
+                      (click)="incluirLancamentos()"
+                      class="btn btn-info btn-round"
+                      [disabled]="!ceFormAmortizacao.valid"
+                    >
+                      Incluir Lançamentos
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
+        <br />
+        <div
+          class="d-flex justify-content-center"
+          *ngIf="tableLoading && tableData.dataRows.length === 0"
+        >
+          <div class="spinner-grow text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+  <div
+    class="col-md-12 col-sm-12 pt-0"
+    *ngIf="!(tableData.dataRows.length === 0)"
+  >
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">MOVIMENTAÇÕES POSTERIORES AO VENCIMENTO</h4>
+          </div>
+          <div class="card-body" style="max-height: 100vh; overflow: scroll">
+            <table
+              [dtOptions]="dtOptions"
+              datatable
+              class="table table-hover"
+              id="tableCheque"
+              *ngIf="tableData && tableData.dataRows && !tableLoading"
+              style="width: 100%"
+            >
+              <thead>
+                <tr align="center">
+                  <th colspan="7"></th>
+                  <th width="400" colspan="5">Encargos Moratórios</th>
+                  <th colspan="6"></th>
+                </tr>
+                <tr align="center">
+                  <th class="align-title-top" rowspan="2">Data Base</th>
+                  <th class="align-title-top" rowspan="2">
+                    Índice
+                    <b>{{ formDefaultValues.formIndice }}</b>
+                  </th>
+                  <th width="80" class="align-title-top" rowspan="2">
+                    Índice Data Base
+                  </th>
+                  <th class="align-title-top" rowspan="2">Data Base Atual</th>
+                  <th class="align-title-top" rowspan="2">
+                    Índice
+                    <b>{{ formDefaultValues.formIndice }}</b>
+                  </th>
+                  <th width="80" class="align-title-top" rowspan="2">
+                    Índice Data Base Atual
+                  </th>
+                  <th class="align-title-top" rowspan="2">Valor devedor</th>
+
+                  <th width="100" rowspan="2">Correção pelo Índice</th>
+
+                  <th colspan="3">
+                    Juros a.m. {{ (formDefaultValues.formJuros || 0) + "%" }}
+                  </th>
+
+                  <th width="100" rowspan="2">
+                    Multa
+                    <b>{{ (formDefaultValues.formMulta || 0) + "%" }}</b>
+                  </th>
+
+                  <th class="align-title-top" rowspan="2">Lançamentos</th>
+                  <th width="80" class="align-title-top" rowspan="2">
+                    Valor devedor atualizado
+                  </th>
+                  <th
+                    width="80"
+                    class="align-title-top log-hidden-false"
+                    rowspan="2"
+                  >
+                    Ação
+                  </th>
+                </tr>
+                <tr align="center">
+                  <th>Dias</th>
+                  <th>%</th>
+                  <th>R$</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let row of tableData.dataRows"
+                  style="font-size: 11px"
+                  align="center"
+                  [vincendas]="row"
+                  title="{{
+                    !row.isTipoLancamento ? 'Linha para fins informativo' : null
+                  }}"
+                >
+                  <td>
+                    <input
+                      type="date"
+                      style="font-size: 11px"
+                      class="form-control col-md-11 col-sm-12 log-hidden-false"
+                      [value]="row.dataBase"
+                      disabled
+                    />
+                    <span class="log-visible-false">{{
+                      formatDate(row.dataBase)
+                    }}</span>
+                  </td>
+                  <td width="80">
+                    <select
+                      [disabled]="
+                        !row.isTipoLancamento
+                          ? 'Linha para fins informativo'
+                          : null
+                      "
+                      style="width: 80px; font-size: 11px"
+                      class="form-control custom-select log-hidden-false"
+                      name="ce_indiceDB"
+                      id="ce_indiceDB"
+                      (change)="
+                        updateInlineIndice(
+                          $event,
+                          row,
+                          'indiceDB',
+                          'indiceDataBase',
+                          'dataBase'
+                        )
+                      "
+                    >
+                      <option
+                        *ngFor="let indice of indice_field"
+                        [value]="indice"
+                        [selected]="indice === row.indiceDB"
+                      >
+                        {{ indice }}
+                      </option>
+                    </select>
+                    <span class="log-visible-false">{{ row.indiceDB }}</span>
+                  </td>
+                  <td>
+                    {{ row.indiceDataBase || "---" }}
+                  </td>
+                  <td width="120">
+                    <input
+                      [disabled]="
+                        !row.isTipoLancamento
+                          ? 'Linha para fins informativo'
+                          : null
+                      "
+                      type="date"
+                      style="font-size: 11px"
+                      class="form-control col-md-11 col-sm-12 log-hidden-false"
+                      name="ce_data_calculo"
+                      max="3000-12-31"
+                      min="{{ row.dataBase }}"
+                      [value]="row.dataBaseAtual"
+                      (blur)="changeDate($event, row)"
+                    />
+                    <span class="log-visible-false">{{
+                      formatDate(row.dataBaseAtual)
+                    }}</span>
+                  </td>
+                  <td width="80">
+                    <select
+                      [disabled]="
+                        !row.isTipoLancamento
+                          ? 'Linha para fins informativo'
+                          : null
+                      "
+                      style="width: 80px; font-size: 11px"
+                      class="form-control custom-select log-hidden-false"
+                      name="ce_indice"
+                      id="ce_indice"
+                      (change)="
+                        updateInlineIndice(
+                          $event,
+                          row,
+                          'indiceBA',
+                          'indiceDataBaseAtual',
+                          'dataBaseAtual'
+                        )
+                      "
+                    >
+                      <option
+                        *ngFor="let indice of indice_field"
+                        [value]="indice"
+                        [selected]="indice === row.indiceBA"
+                      >
+                        {{ indice }}
+                      </option>
+                    </select>
+                    <span class="log-visible-false">{{ row.indiceBA }}</span>
+                  </td>
+                  <td>
+                    {{ row.indiceDataBaseAtual || "---" }}
+                  </td>
+                  <td>
+                    {{ formatCurrency(row.valorDevedor) }}
+                  </td>
+                  <td>
+                    {{
+                      formatCurrency(row.encargosMonetarios.correcaoPeloIndice)
+                    }}
+                  </td>
+                  <td>
+                    {{ row.encargosMonetarios.jurosAm.dias || 0 }}
+                  </td>
+                  <td>
+                    {{ row.encargosMonetarios.jurosAm.percentsJuros }}
+                  </td>
+                  <td>
+                    {{
+                      formatCurrency(row.encargosMonetarios.jurosAm.moneyValue)
+                    }}
+                  </td>
+                  <td>
+                    {{ formatCurrency(row.encargosMonetarios.multa) }}
+                  </td>
+                  <td>
+                    {{
+                      row.tipoLancamento === "debit"
+                        ? formatCurrency(row.lancamentos)
+                        : "(" + formatCurrency(row.lancamentos) + ")"
+                    }}
+                  </td>
+                  <td>
+                    {{ formatCurrency(row.valorDevedorAtualizado) }}
+                  </td>
+                  <td (click)="deleteRow(row)" class="log-hidden-false">
+                    <i
+                      style="color: red; cursor: pointer"
+                      class="nc-icon nc-simple-remove"
+                    ></i>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="parcelado-font-size">
+                  <th [footer]="'left'" class="footer-title-table" colspan="7">
+                    SUBTOTAL APURADO EM {{ total_data_calculo || "---------" }}
+                  </th>
+                  <th footer width="100" colspan="1"></th>
+                  <th footer width="100" colspan="1"></th>
+                  <th footer></th>
+                  <th footer></th>
+                  <th footer></th>
+                  <th footer></th>
+                  <th footer>{{ formatCurrency(total_subtotal || 0) }}</th>
+                  <th footer class="log-hidden-false"></th>
+                </tr>
+              </tfoot>
+            </table>
+            <div
+              class="d-flex justify-content-center"
+              *ngIf="tableLoading"
+              style="padding: 200px"
+            >
+              <div
+                class="spinner-grow text-primary"
+                style="width: 4rem; height: 4rem"
+                role="status"
+              >
+                <span class="sr-only">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="card-footer"
+            *ngIf="tableData.dataRows.length > 0 && !tableLoading"
+          >
+            <div class="row">
+              <div class="col-md-10">
+                <!-- <p>Subtotal apurado em {{ subtotal_data_calculo || "---------"}}</p> -->
+                <p>Honorários {{ formDefaultValues.formHonorarios || 0 }}%</p>
+                <p>
+                  Multa sob contrato
+                  {{ formDefaultValues.formMultaSobContrato || 0 }}%
+                </p>
+                <p>TOTAL APURADO EM {{ total_data_calculo || "---------" }}</p>
+              </div>
+              <div class="col-md-2">
+                <!-- <p>{{formatCurrency(total_subtotal || 0)}}</p> -->
+                <p>{{ formatCurrency(total_honorarios || 0) }}</p>
+                <p>{{ formatCurrency(total_multa_sob_contrato || 0) }}</p>
+                <p>{{ formatCurrency(total_grandtotal || 0) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

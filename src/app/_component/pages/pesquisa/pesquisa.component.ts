@@ -8,7 +8,7 @@ import { PastasContratosService } from "../../../_services/pastas-contratos.serv
 })
 export class PesquisaComponent implements OnInit {
   peForm: FormGroup;
-  txtContractRef: string = "";
+  txtContractRef = "";
 
   @Input() tableLoading: boolean;
   @Output() contractRef = new EventEmitter();
@@ -61,9 +61,9 @@ export class PesquisaComponent implements OnInit {
   }
 
   agruparPasta(attr) {
-    let pastasFiltros = [];
+    const pastasFiltros = [];
 
-    this.pastas["data"].map((pasta) => pastasFiltros.push(pasta[attr]));
+    this.pastas.data.map((pasta) => pastasFiltros.push(pasta[attr]));
     const setUnico = new Set(pastasFiltros);
 
     return [...setUnico];
@@ -88,7 +88,7 @@ export class PesquisaComponent implements OnInit {
       });
     }
 
-    this.pastas["data"].map((pasta) => {
+    this.pastas.data.map((pasta) => {
       if (pasta.PASTA === this.form.pasta.value) {
         this.contractList_field.push(pasta.CONTRATO);
         this.clienteList_field.push(pasta.CLIENTE);
@@ -118,7 +118,7 @@ export class PesquisaComponent implements OnInit {
       });
     }
 
-    this.pastas["data"].map((pasta) => {
+    this.pastas.data.map((pasta) => {
       if (
         pasta.PASTA === this.form.pasta.value &&
         pasta.CONTRATO === this.form.contrato.value
@@ -149,7 +149,7 @@ export class PesquisaComponent implements OnInit {
       this.cnpjList_field = [];
     }
 
-    this.pastas["data"].map((pasta) => {
+    this.pastas.data.map((pasta) => {
       if (pasta.CLIENTE === this.form.cliente.value) {
         this.contractList_field.push(pasta.CONTRATO);
         this.folderData_field.push(pasta.PASTA);
@@ -185,7 +185,7 @@ export class PesquisaComponent implements OnInit {
       this.clienteList_field = [];
     }
 
-    this.pastas["data"].map((pasta) => {
+    this.pastas.data.map((pasta) => {
       if (pasta.CNPJ === this.form.cnpj.value) {
         if (!this.form.cliente.value) {
           this.clienteList_field.push(pasta.CLIENTE);
@@ -208,7 +208,7 @@ export class PesquisaComponent implements OnInit {
     this.folderData_field = [...setUnicoPasta];
   }
 
-  get pastas() {
+  get pastas(): any {
     return this.pastasContratosService.getPastas();
   }
   get form() {

@@ -1,15 +1,14 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs/Observable";
 
-import * as PASTAS from './pastas.json';
+import * as PASTAS from "./pastas.json";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class PastasContratosService {
-
-  pastas:any = PASTAS;
+  pastas: any = PASTAS;
 
   constructor(private http: HttpClient) {}
 

@@ -1,23 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import * as moment from 'moment'; // add this 1 of 4
-import { IndicesService } from '../../../_services/indices.service';
+import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { IndicesService } from "../../../_services/indices.service";
 
-import { LISTA_INDICES, LANGUAGEM_TABLE } from '../../util/constants'
-import { getCurrentDate, formatDate, formatCurrency, getLastLine, verifyNumber, getQtdDias } from '../../util/util';
+import { LISTA_INDICES, LANGUAGEM_TABLE } from "../../util/constants";
+import { formatDate, formatCurrency, verifyNumber } from "../../util/util";
 
 declare interface TableData {
   dataRows: Array<Object>;
 }
 
 @Component({
-  selector: 'app-indices',
-  templateUrl: './indices.component.html',
-  styleUrls: ['./indices.component.css']
+  selector: "app-indices",
+  templateUrl: "./indices.component.html",
+  styleUrls: ["./indices.component.css"],
 })
-
 export class IndicesComponent implements OnInit {
-
   indicesForm: FormGroup;
   tableData: TableData;
   tableLoading = false;
@@ -25,8 +22,8 @@ export class IndicesComponent implements OnInit {
 
   indices_field = LISTA_INDICES;
   alertType = {
-    mensagem: '',
-    tipo: ''
+    mensagem: "",
+    tipo: "",
   };
 
   updateLoading = false;
@@ -41,20 +38,19 @@ export class IndicesComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private indicesService: IndicesService,
-  ) {
-  }
+    private indicesService: IndicesService
+  ) {}
 
   ngOnInit(): void {
     this.indicesForm = this.formBuilder.group({
-      indice: ['', Validators.required],
-      data: ['', Validators.required],
-      valor: ['', Validators.required]
+      indice: ["", Validators.required],
+      data: ["", Validators.required],
+      valor: ["", Validators.required],
     });
 
     this.tableData = {
-      dataRows: []
-    }
+      dataRows: [],
+    };
 
     this.dtOptions = {
       paging: true,
@@ -77,20 +73,20 @@ export class IndicesComponent implements OnInit {
       //     });
       //   });
       // },
-      language: LANGUAGEM_TABLE
-    }
+      language: LANGUAGEM_TABLE,
+    };
   }
 
   verifyNumber(value) {
-    verifyNumber(value)
+    verifyNumber(value);
   }
 
   formatCurrency(value) {
-    return formatCurrency(value)
+    return formatCurrency(value);
   }
 
-  formatDate(value, format = 'DD/MM/YYYY') {
-    return formatDate(value, format)
+  formatDate(value, format = "DD/MM/YYYY") {
+    return formatDate(value, format);
   }
 
   toggleUpdateLoading() {
@@ -103,28 +99,32 @@ export class IndicesComponent implements OnInit {
   adicionaIndice() {
     this.tableLoading = true;
 
-    const indiceList = [{
-      indice: this.indice_form.indice.value,
-      data: this.indice_form.data.value,
-      valor: this.indice_form.valor.value
-    }];
+    const indiceList = [
+      {
+        indice: this.indice_form.indice.value,
+        data: this.indice_form.data.value,
+        valor: this.indice_form.valor.value,
+      },
+    ];
 
-    this.indicesService.addIndice(indiceList).subscribe(resp => {
-      //this.tableData.dataRows.push(indice);
-      $('#tableIndice').DataTable().ajax.reload();
-      this.indicesForm.reset({ indice: this.indice_form.indice.value });
-      this.alertType = {
-        mensagem: 'Índice incluido!',
-        tipo: 'success'
-      };
-      this.toggleUpdateLoading()
-
-    }, err => {
-      this.alertType = {
-        mensagem: 'Registro não incluido!',
-        tipo: 'danger'
-      };
-    });
+    this.indicesService.addIndice(indiceList).subscribe(
+      (resp) => {
+        // this.tableData.dataRows.push(indice);
+        $("#tableIndice").DataTable().ajax.reload();
+        this.indicesForm.reset({ indice: this.indice_form.indice.value });
+        this.alertType = {
+          mensagem: "Índice incluido!",
+          tipo: "success",
+        };
+        this.toggleUpdateLoading();
+      },
+      (err) => {
+        this.alertType = {
+          mensagem: "Registro não incluido!",
+          tipo: "danger",
+        };
+      }
+    );
 
     this.tableLoading = false;
   }
@@ -133,57 +133,72 @@ export class IndicesComponent implements OnInit {
     if (request) {
       this.tableData.dataRows = [];
       this.tableLoading = true;
-      const DATAINPUT = this.indice_form.data.value ? formatDate(this.indice_form.data.value, "YYYY-MM-DD") : false;
+      const DATAINPUT = this.indice_form.data.value
+        ? formatDate(this.indice_form.data.value, "YYYY-MM-DD")
+        : false;
 
-      this.indicesService.getIndice(this.indice_form.indice.value).subscribe(indices => {
-        this.tableData.dataRows = indices['data'];
-        this.infoTable = indices;
+      this.indicesService
+        .getIndice(this.indice_form.indice.value)
+        .subscribe((indices: any) => {
+          this.tableData.dataRows = indices.data;
+          this.infoTable = indices;
 
-        setTimeout(() => {
-          this.tableLoading = false;
-          this.request = false
-        }, 100);
-      })
-      this.request = true
+          setTimeout(() => {
+            this.tableLoading = false;
+            this.request = false;
+          }, 100);
+        });
+      this.request = true;
     }
   }
 
   changeIndiceTable(e, row, column) {
-    const value = column === 'valor' ? parseFloat(e.target.value) : e.target.value;
+    const value =
+      column === "valor" ? parseFloat(e.target.value) : e.target.value;
     const index = this.tableData.dataRows.indexOf(row);
     this.tableData.dataRows[index][column] = value;
 
-    this.indicesService.updateIndice(row.id, this.tableData.dataRows[index]).subscribe(resp => {
-      this.alertType = {
-        mensagem: 'Índice alterado!',
-        tipo: 'success'
-      };
-      this.toggleUpdateLoading()
-    }, err => {
-      this.alertType = {
-        mensagem: 'Índice não alterado!',
-        tipo: 'warning'
-      };
-      this.toggleUpdateLoading()
-    });
+    this.indicesService
+      .updateIndice(row.id, this.tableData.dataRows[index])
+      .subscribe(
+        (resp) => {
+          this.alertType = {
+            mensagem: "Índice alterado!",
+            tipo: "success",
+          };
+          this.toggleUpdateLoading();
+        },
+        (err) => {
+          this.alertType = {
+            mensagem: "Índice não alterado!",
+            tipo: "warning",
+          };
+          this.toggleUpdateLoading();
+        }
+      );
   }
 
   deleteRow(row) {
-    this.indicesService.removeIndice(row.id).subscribe(resp => {
-      $('#tableIndice').DataTable().ajax.reload();
+    this.indicesService.removeIndice(row.id).subscribe(
+      (resp) => {
+        $("#tableIndice").DataTable().ajax.reload();
 
-      this.alertType = {
-        mensagem: 'Índice excluido!',
-        tipo: 'danger'
-      };
-      this.toggleUpdateLoading()
-    }, err => {
-      this.alertType = {
-        mensagem: 'Índice não excluido!',
-        tipo: 'warning'
-      };
-    });
+        this.alertType = {
+          mensagem: "Índice excluido!",
+          tipo: "danger",
+        };
+        this.toggleUpdateLoading();
+      },
+      (err) => {
+        this.alertType = {
+          mensagem: "Índice não excluido!",
+          tipo: "warning",
+        };
+      }
+    );
   }
 
-  get indice_form() { return this.indicesForm.controls; }
+  get indice_form() {
+    return this.indicesForm.controls;
+  }
 }

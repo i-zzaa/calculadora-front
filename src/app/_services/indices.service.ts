@@ -1,23 +1,35 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Indices } from '../_models/indices';
-import { environment } from '../../environments/environment';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Indices } from "../_models/indices";
+import { environment } from "../../environments/environment";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class IndicesService {
-
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getIndice(indice: string) {
-    return this.http.get<Indices[]>(`${environment.API_PATH}/indices?indice=${indice}`);
+    return this.http.get<Indices[]>(
+      `${environment.API_PATH}/indices?indice=${indice}`
+    );
   }
 
-  getIndicePage(indice: string, pageSize: number, pageNumber: number, draw: number) {
-    return this.http.get<Indices[]>(`${environment.API_PATH}/indices?pageSize=${pageSize}&pageNumber=${pageNumber}&indice=${indice}&getAll=${false}&draw=${draw}`);
+  getIndicePage(
+    indice: string,
+    pageSize: number,
+    pageNumber: number,
+    draw: number
+  ) {
+    return this.http.get<Indices[]>(
+      `${
+        environment.API_PATH
+      }/indices?pageSize=${pageSize}&pageNumber=${pageNumber}&indice=${indice}&getAll=${false}&draw=${draw}`
+    );
   }
 
   getIndiceData(indice: string, data: string) {
-    return this.http.get<Indices[]>(`${environment.API_PATH}/indices/byDate?indice=${indice}&data=${data}`);
+    return this.http.get<Indices[]>(
+      `${environment.API_PATH}/indices/byDate?indice=${indice}&data=${data}`
+    );
   }
 
   addIndice(indiceList: any) {
@@ -39,12 +51,13 @@ export class IndicesService {
     switch (indice) {
       case "Encargos Contratuais %":
         return new Promise((resolve, reject) => {
-          resolve(formDefaultValues.formIndiceEncargos)
-        })
+          resolve(formDefaultValues.formIndiceEncargos);
+        });
         break;
       default:
         return (await this.getIndiceData(indice, data))
-          .toPromise().then(ind => ind['valor'])
+          .toPromise()
+          .then((ind: any) => ind.valor);
     }
   }
 }

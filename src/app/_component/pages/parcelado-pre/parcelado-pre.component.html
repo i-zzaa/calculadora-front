@@ -1,205 +1,406 @@
-<div class="row ">
-    <app-notificacao [mensagem]="alertType.mensagem" [tipo]="alertType.tipo" [show]="updateLoading"></app-notificacao>
+<div class="row">
+  <app-notificacao
+    [mensagem]="alertType.mensagem"
+    [tipo]="alertType.tipo"
+    [show]="updateLoading"
+  ></app-notificacao>
 
-    <div class="col-md-12">
-        <div class="card ">
-            <div class="card-header "></div>
-            <div class="card-body ">
-                <div class="row">
-                    <div class="col-md-12">
-                        <app-pesquisa (contractRef)="pesquisarContratos($event)" [tableLoading]="tableLoading" (resetForm)="simulacao.resetForm($event)" #pesquisa></app-pesquisa>
-                    </div>
-
-                    <div class="col-md-12 col-sm-12">
-                        <app-simulacao #simulacao [updateLoadingBtn]="updateLoadingBtn" [tableDataLength]="tableData.dataRows.length > 0" (salvar)="atualizarRisco()" (simularCalculo)="simularCalc(false, 'btn')" (formValue)="setFormRiscos($event)" [isDesagio]="isDesagio">
-                        </app-simulacao>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <app-parcelas [pesquisaFormValid]="pesquisa.peForm.valid" (incluirParcelas)="incluirParcelas($event)" [minParcela]="minParcela"></app-parcelas>
-    </div>
-    <div class="col-md-6">
-        <app-amortizacao (deleteAmortizacao)="deleteRowAmortizacao($event)" [tableDataAmortizacao]="tableDataAmortizacao" [dataCalculo]="simulacao.formRiscos['formDataCalculo']" [pesquisaFormValid]="pesquisa.peForm.valid" (incluirAmortizacao)="adicionarAmortizacao($event)"></app-amortizacao>
-    </div>
-    <div class="col-md-12 col-sm-12 pt-0" *ngIf="!(tableData.dataRows.length === 0) && !quitado">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header"></div>
+      <div class="card-body">
         <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">DEMONSTRATIVO DE SALDO DEVEDOR</h4>
-                    </div>
-                    <div class="card-body" style="max-height: 100vh;overflow: scroll;">
-                        <table [dtOptions]="dtOptions" datatable class="table table-hover" #tableParcelado *ngIf="tableData && tableData.dataRows && !tableLoading" style="width: 100%;" id="tablePre">
-                            <thead>
-                                <tr align="center">
-                                    <th colspan="8"></th>
-                                    <th width="400" colspan="5">Encargos Moratórios</th>
-                                    <th colspan="5">
-                                        <th colspan="3"> </th>
-                                </tr>
-                                <tr align="center">
-                                    <th class="align-title-top" rowspan="2">Nº Parcela</th>
-                                    <th class="align-title-top" rowspan="2">Data Vencimento</th>
-                                    <th class="align-title-top" rowspan="2">Índice
-                                        <b>{{formDefaultValues.formIndice}}</b> </th>
-                                    <th width="80" class="align-title-top" rowspan="2">Índice Data Vencimento</th>
-                                    <th class="align-title-top" rowspan="2">Data Cálculo / Amort.</th>
-                                    <th class="align-title-top" rowspan="2">Índice
-                                        <b>{{formDefaultValues.formIndice}}</b> </th>
-                                    <th width="80" class="align-title-top" rowspan="2">Índice Data Cálculo / Amort.
-                                    </th>
-                                    <th class="align-title-top" rowspan="2">Valor no Vencimento R$</th>
-                                    <th width="100" rowspan="2">Correção pelo Índice</th>
-                                    <th colspan="3">Juros a.m. {{(formDefaultValues.formJuros || 0 ) + "%"}} </th>
-                                    <th width="100" rowspan="2">Multa
-                                        <b>{{(formDefaultValues.formMulta || 0 ) + "%"}}</b> </th>
-                                    <th class="align-title-top" rowspan="2">Subtotal</th>
-                                    <th width="80" class="align-title-top" rowspan="2">Valor da PMT Vincenda em
-                                        <b>{{tableData.dataRows.length ? formatDate(tableData.dataRows[0]['dataCalcAmor']) : ''}}</b>
-                                    </th>
-                                    <th width="80" class="align-title-top" rowspan="2">Amortização</th>
-                                    <th width="80" class="align-title-top" rowspan="2">Total Devedor</th>
-                                    <th width="80" class="align-title-top" rowspan="2">Status</th>
-                                    <th width="80" class="align-title-top log-hidden-false" rowspan="2">Ação</th>
-                                </tr>
-                                <tr align="center">
-                                    <th>Dias</th>
-                                    <th>%</th>
-                                    <th>R$</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let row of tableData.dataRows" class="parcelado-font-size" align="center" [parcelaPaga]="row.status" [vincendas]="row.vincenda ? true : null">
-                                    <td> {{row.nparcelas}} </td>
-                                    <td>
-                                        <input type="date" [vincendas]="row.vincenda ? true : null" [disabled]="row.status === 'Pago'" class=" parcelado-font-size form-control col-md-11 col-sm-12 log-hidden-false" name="pre_dataVencimento" id="pre_dataCalcAmor" [value]="row.dataVencimento"
-                                            (blur)="changeDate($event, row, 'dataVencimento', 'indiceDV', 'indiceDataVencimento')">
-                                        <span class="log-visible-false">{{formatDate(row.dataVencimento)}}</span>
-                                    </td>
-                                    <td width="80">
-                                        <select [vincendas]="row.vincenda ? true : null" [disabled]="row.status === 'Pago'" class="parcelado-font-size form-control custom-select log-hidden-false" name="pre_indiceDV" id="pre_indiceDV" (change)="updateInlineIndice($event.target.value, row, 'indiceDataVencimento', 'indiceDV', 'dataVencimento')">
-											<option *ngFor="let indice of indice_field" [value]="indice"
-												[selected]="indice === row.indiceDV"> {{indice}}</option>
-										</select>
-                                        <span class="log-visible-false">{{row.indiceDV}}</span>
+          <div class="col-md-12">
+            <app-pesquisa
+              (contractRef)="pesquisarContratos($event)"
+              [tableLoading]="tableLoading"
+              (resetForm)="simulacao.resetForm($event)"
+              #pesquisa
+            ></app-pesquisa>
+          </div>
 
-                                    </td>
-                                    <td>
-                                        {{row.indiceDataVencimento || "---"}}
-                                    </td>
-                                    <td width="120">
-                                        <input type="date" [vincendas]="row.vincenda ? true : null" [disabled]="row.status === 'Pago'" class="parcelado-font-size form-control col-md-11 col-sm-12 log-hidden-false" name="pre_dataCalcAmor" id="pre_dataCalcAmor" max="3000-12-31" [value]="row.dataCalcAmor"
-                                            (blur)="changeDate($event, row, 'dataCalcAmor', 'indiceDCA', 'indiceDataCalcAmor')">
-                                        <span class="log-visible-false">{{formatDate(row.dataCalcAmor)}}</span>
-
-                                    </td>
-                                    <td width="80">
-                                        <select [vincendas]="row.vincenda ? true : null" [disabled]="row.status === 'Pago'" class="parcelado-font-size form-control custom-select log-hidden-false" name="pre_indice" id="pre_indice" (change)="updateInlineIndice($event.target.value, row, 'indiceDataCalcAmor', 'indiceDCA', 'dataCalcAmor')">
-											<option *ngFor="let indice of indice_field" [value]="indice"
-												[selected]="indice === row.indiceDCA"> {{indice}}</option>
-										</select>
-                                        <span class="log-visible-false">{{row.indiceDCA}}</span>
-
-                                    </td>
-                                    <td>
-                                        {{row.indiceDataCalcAmor || "---"}}
-                                    </td>
-                                    <td>
-                                        {{formatCurrency(row.valorNoVencimento)}} </td>
-                                    <td>
-                                        {{formatCurrency(row.encargosMonetarios.correcaoPeloIndice)}} </td>
-                                    <td>
-                                        {{row.encargosMonetarios.jurosAm.dias || 0}} </td>
-                                    <td>
-                                        {{row.encargosMonetarios.jurosAm.percentsJuros || 0}} </td>
-                                    <td>
-                                        {{formatCurrency(row.encargosMonetarios.jurosAm.moneyValue)}} </td>
-                                    <td>
-                                        {{formatCurrency(row.encargosMonetarios.multa)}} </td>
-                                    <td>
-                                        {{formatCurrency(row.subtotal)}} </td>
-                                    <td>
-                                        {{formatCurrency(row.valorPMTVincenda)}} </td>
-                                    <td>
-                                        {{formatCurrencyAmortizacao(row.amortizacao)}} </td>
-                                    <td>
-                                        {{formatCurrency(row.totalDevedor)}} </td>
-                                    <td> {{row.status}} </td>
-                                    <td class="log-hidden-false" (click)="deleteRow(row)"><i style="color: red; cursor: pointer;" [hidden]="row.status === 'Pago'" class="nc-icon nc-simple-remove"></i>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <tfoot>
-                                <tr class="parcelado-font-size">
-                                    <th [footer]="'left'" colspan="7">TOTAL DE PARCELAS VENCIDAS
-                                    </th>
-                                    <th footer width="100" colspan="1">
-                                        {{formatCurrency(totalParcelasVencidas.valorNoVencimento)}}</th>
-                                    <th footer width="100" colspan="1">
-                                        {{formatCurrency(totalParcelasVencidas.correcaoPeloIndice)}}</th>
-                                    <th footer></th>
-                                    <th footer></th>
-                                    <th footer>{{formatCurrency(totalParcelasVencidas.moneyValue)}}
-                                    </th>
-                                    <th footer>{{formatCurrency(totalParcelasVencidas.multa)}}</th>
-                                    <th footer>{{formatCurrency(totalParcelasVencidas.subtotal)}}</th>
-                                    <th footer></th>
-                                    <th footer>{{formatCurrency(totalParcelasVencidas.amortizacao)}}
-                                    </th>
-                                    <th footer>{{formatCurrency(totalParcelasVencidas.totalDevedor)}}
-                                    </th>
-                                    <th footer></th>
-                                    <th footer class="log-hidden-false"></th>
-                                </tr>
-                                <tr align="left" class="parcelado-font-size">
-                                    <th [footer]="'left'" colspan="7">TOTAL DE PARCELAS VINCENDAS
-                                    </th>
-                                    <th footer width="100" colspan="1"></th>
-                                    <th footer width="100" colspan="1"></th>
-                                    <th footer colspan="1"></th>
-                                    <th footer colspan="1"></th>
-                                    <th footer></th>
-                                    <th footer></th>
-                                    <th footer></th>
-                                    <th footer>
-                                        {{formatCurrency(totalParcelasVincendas.valorPMTVincenda)}}
-                                    </th>
-                                    <th footer></th>
-                                    <th footer>{{formatCurrency(totalParcelasVincendas.totalDevedor)}}
-                                    </th>
-                                    <th footer></th>
-                                    <th footer class="log-hidden-false"></th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                        <div class="d-flex justify-content-center" *ngIf="tableLoading" style="padding: 200px">
-                            <div class="spinner-grow text-primary" style="width: 4rem; height: 4rem;" role="status">
-                                <span class="sr-only">Loading...</span> </div>
-                        </div>
-                    </div>
-                    <div class="card-footer" *ngIf="tableData.dataRows.length > 0 && !tableLoading">
-                        <div class="row">
-                            <div class="col-md-10">
-                                <p>Subtotal Devedor em {{ subtotal_data_calculo || "---------"}}</p>
-                                <p>Amortização</p>
-                                <p>Honorários {{formDefaultValues.formHonorarios || 0}}%</p>
-                                <p>Multa sob contrato {{formDefaultValues.formMultaSobContrato || 0}}%</p>
-                                <p>TOTAL SALDO DEVEDOR EM {{total_data_calculo || "---------"}}</p>
-                            </div>
-                            <div class="col-md-2">
-                                <p>{{formatCurrency(total_subtotal || 0)}}</p>
-                                <p>{{formatCurrencyAmortizacao(amortizacaoGeral || 0)}}</p>
-                                <p>{{formatCurrency(total_honorarios || 0)}}</p>
-                                <p>{{formatCurrency(total_multa_sob_contrato || 0)}}</p>
-                                <p>{{formatCurrency(total_grandtotal || 0)}}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          <div class="col-md-12 col-sm-12">
+            <app-simulacao
+              #simulacao
+              [updateLoadingBtn]="updateLoadingBtn"
+              [tableDataLength]="tableData.dataRows.length > 0"
+              (salvar)="atualizarRisco()"
+              (simularCalculo)="simularCalc(false, 'btn')"
+              (formValue)="setFormRiscos($event)"
+              [isDesagio]="isDesagio"
+            >
+            </app-simulacao>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
+  <div class="col-md-6">
+    <app-parcelas
+      [pesquisaFormValid]="pesquisa.peForm.valid"
+      (incluirParcelas)="incluirParcelas($event)"
+      [minParcela]="minParcela"
+    ></app-parcelas>
+  </div>
+  <div class="col-md-6">
+    <app-amortizacao
+      (deleteAmortizacao)="deleteRowAmortizacao($event)"
+      [tableDataAmortizacao]="tableDataAmortizacao"
+      [dataCalculo]="simulacao.formRiscos['formDataCalculo']"
+      [pesquisaFormValid]="pesquisa.peForm.valid"
+      (incluirAmortizacao)="adicionarAmortizacao($event)"
+    ></app-amortizacao>
+  </div>
+  <div
+    class="col-md-12 col-sm-12 pt-0"
+    *ngIf="!(tableData.dataRows.length === 0) && !quitado"
+  >
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">DEMONSTRATIVO DE SALDO DEVEDOR</h4>
+          </div>
+          <div class="card-body" style="max-height: 100vh; overflow: scroll">
+            <table
+              [dtOptions]="dtOptions"
+              datatable
+              class="table table-hover"
+              #tableParcelado
+              *ngIf="tableData && tableData.dataRows && !tableLoading"
+              style="width: 100%"
+              id="tablePre"
+            >
+              <thead>
+                <tr align="center">
+                  <th colspan="8"></th>
+                  <th width="400" colspan="5">Encargos Moratórios</th>
+                  <th colspan="5"></th>
+                  <th colspan="3"></th>
+                </tr>
+                <tr align="center">
+                  <th class="align-title-top" rowspan="2">Nº Parcela</th>
+                  <th class="align-title-top" rowspan="2">Data Vencimento</th>
+                  <th class="align-title-top" rowspan="2">
+                    Índice <b>{{ formDefaultValues.formIndice }}</b>
+                  </th>
+                  <th width="80" class="align-title-top" rowspan="2">
+                    Índice Data Vencimento
+                  </th>
+                  <th class="align-title-top" rowspan="2">
+                    Data Cálculo / Amort.
+                  </th>
+                  <th class="align-title-top" rowspan="2">
+                    Índice <b>{{ formDefaultValues.formIndice }}</b>
+                  </th>
+                  <th width="80" class="align-title-top" rowspan="2">
+                    Índice Data Cálculo / Amort.
+                  </th>
+                  <th class="align-title-top" rowspan="2">
+                    Valor no Vencimento R$
+                  </th>
+                  <th width="100" rowspan="2">Correção pelo Índice</th>
+                  <th colspan="3">
+                    Juros a.m. {{ (formDefaultValues.formJuros || 0) + "%" }}
+                  </th>
+                  <th width="100" rowspan="2">
+                    Multa <b>{{ (formDefaultValues.formMulta || 0) + "%" }}</b>
+                  </th>
+                  <th class="align-title-top" rowspan="2">Subtotal</th>
+                  <th width="80" class="align-title-top" rowspan="2">
+                    Valor da PMT Vincenda em
+                    <b>{{
+                      tableData.dataRows.length
+                        ? formatDate(tableData.dataRows[0]["dataCalcAmor"])
+                        : ""
+                    }}</b>
+                  </th>
+                  <th width="80" class="align-title-top" rowspan="2">
+                    Amortização
+                  </th>
+                  <th width="80" class="align-title-top" rowspan="2">
+                    Total Devedor
+                  </th>
+                  <th width="80" class="align-title-top" rowspan="2">Status</th>
+                  <th
+                    width="80"
+                    class="align-title-top log-hidden-false"
+                    rowspan="2"
+                  >
+                    Ação
+                  </th>
+                </tr>
+                <tr align="center">
+                  <th>Dias</th>
+                  <th>%</th>
+                  <th>R$</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let row of tableData.dataRows"
+                  class="parcelado-font-size"
+                  align="center"
+                  [parcelaPaga]="row.status"
+                  [vincendas]="row.vincenda ? true : null"
+                >
+                  <td>{{ row.nparcelas }}</td>
+                  <td>
+                    <input
+                      type="date"
+                      [vincendas]="row.vincenda ? true : null"
+                      [disabled]="row.status === 'Pago'"
+                      class="parcelado-font-size form-control col-md-11 col-sm-12 log-hidden-false"
+                      name="pre_dataVencimento"
+                      id="pre_dataCalcAmor"
+                      [value]="row.dataVencimento"
+                      (blur)="
+                        changeDate(
+                          $event,
+                          row,
+                          'dataVencimento',
+                          'indiceDV',
+                          'indiceDataVencimento'
+                        )
+                      "
+                    />
+                    <span class="log-visible-false">{{
+                      formatDate(row.dataVencimento)
+                    }}</span>
+                  </td>
+                  <td width="80">
+                    <select
+                      [vincendas]="row.vincenda ? true : null"
+                      [disabled]="row.status === 'Pago'"
+                      class="parcelado-font-size form-control custom-select log-hidden-false"
+                      name="pre_indiceDV"
+                      id="pre_indiceDV"
+                      (change)="
+                        updateInlineIndice(
+                          $event.target.value,
+                          row,
+                          'indiceDataVencimento',
+                          'indiceDV',
+                          'dataVencimento'
+                        )
+                      "
+                    >
+                      <option
+                        *ngFor="let indice of indice_field"
+                        [value]="indice"
+                        [selected]="indice === row.indiceDV"
+                      >
+                        {{ indice }}
+                      </option>
+                    </select>
+                    <span class="log-visible-false">{{ row.indiceDV }}</span>
+                  </td>
+                  <td>
+                    {{ row.indiceDataVencimento || "---" }}
+                  </td>
+                  <td width="120">
+                    <input
+                      type="date"
+                      [vincendas]="row.vincenda ? true : null"
+                      [disabled]="row.status === 'Pago'"
+                      class="parcelado-font-size form-control col-md-11 col-sm-12 log-hidden-false"
+                      name="pre_dataCalcAmor"
+                      id="pre_dataCalcAmor"
+                      max="3000-12-31"
+                      [value]="row.dataCalcAmor"
+                      (blur)="
+                        changeDate(
+                          $event,
+                          row,
+                          'dataCalcAmor',
+                          'indiceDCA',
+                          'indiceDataCalcAmor'
+                        )
+                      "
+                    />
+                    <span class="log-visible-false">{{
+                      formatDate(row.dataCalcAmor)
+                    }}</span>
+                  </td>
+                  <td width="80">
+                    <select
+                      [vincendas]="row.vincenda ? true : null"
+                      [disabled]="row.status === 'Pago'"
+                      class="parcelado-font-size form-control custom-select log-hidden-false"
+                      name="pre_indice"
+                      id="pre_indice"
+                      (change)="
+                        updateInlineIndice(
+                          $event.target.value,
+                          row,
+                          'indiceDataCalcAmor',
+                          'indiceDCA',
+                          'dataCalcAmor'
+                        )
+                      "
+                    >
+                      <option
+                        *ngFor="let indice of indice_field"
+                        [value]="indice"
+                        [selected]="indice === row.indiceDCA"
+                      >
+                        {{ indice }}
+                      </option>
+                    </select>
+                    <span class="log-visible-false">{{ row.indiceDCA }}</span>
+                  </td>
+                  <td>
+                    {{ row.indiceDataCalcAmor || "---" }}
+                  </td>
+                  <td>
+                    {{ formatCurrency(row.valorNoVencimento) }}
+                  </td>
+                  <td>
+                    {{
+                      formatCurrency(row.encargosMonetarios.correcaoPeloIndice)
+                    }}
+                  </td>
+                  <td>
+                    {{ row.encargosMonetarios.jurosAm.dias || 0 }}
+                  </td>
+                  <td>
+                    {{ row.encargosMonetarios.jurosAm.percentsJuros || 0 }}
+                  </td>
+                  <td>
+                    {{
+                      formatCurrency(row.encargosMonetarios.jurosAm.moneyValue)
+                    }}
+                  </td>
+                  <td>
+                    {{ formatCurrency(row.encargosMonetarios.multa) }}
+                  </td>
+                  <td>
+                    {{ formatCurrency(row.subtotal) }}
+                  </td>
+                  <td>
+                    {{ formatCurrency(row.valorPMTVincenda) }}
+                  </td>
+                  <td>
+                    {{ formatCurrencyAmortizacao(row.amortizacao) }}
+                  </td>
+                  <td>
+                    {{ formatCurrency(row.totalDevedor) }}
+                  </td>
+                  <td>{{ row.status }}</td>
+                  <td class="log-hidden-false" (click)="deleteRow(row)">
+                    <i
+                      style="color: red; cursor: pointer"
+                      [hidden]="row.status === 'Pago'"
+                      class="nc-icon nc-simple-remove"
+                    ></i>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="parcelado-font-size">
+                  <th [footer]="'left'" colspan="7">
+                    TOTAL DE PARCELAS VENCIDAS
+                  </th>
+                  <th footer width="100" colspan="1">
+                    {{
+                      formatCurrency(totalParcelasVencidas.valorNoVencimento)
+                    }}
+                  </th>
+                  <th footer width="100" colspan="1">
+                    {{
+                      formatCurrency(totalParcelasVencidas.correcaoPeloIndice)
+                    }}
+                  </th>
+                  <th footer></th>
+                  <th footer></th>
+                  <th footer>
+                    {{ formatCurrency(totalParcelasVencidas.moneyValue) }}
+                  </th>
+                  <th footer>
+                    {{ formatCurrency(totalParcelasVencidas.multa) }}
+                  </th>
+                  <th footer>
+                    {{ formatCurrency(totalParcelasVencidas.subtotal) }}
+                  </th>
+                  <th footer></th>
+                  <th footer>
+                    {{ formatCurrency(totalParcelasVencidas.amortizacao) }}
+                  </th>
+                  <th footer>
+                    {{ formatCurrency(totalParcelasVencidas.totalDevedor) }}
+                  </th>
+                  <th footer></th>
+                  <th footer class="log-hidden-false"></th>
+                </tr>
+                <tr align="left" class="parcelado-font-size">
+                  <th [footer]="'left'" colspan="7">
+                    TOTAL DE PARCELAS VINCENDAS
+                  </th>
+                  <th footer width="100" colspan="1"></th>
+                  <th footer width="100" colspan="1"></th>
+                  <th footer colspan="1"></th>
+                  <th footer colspan="1"></th>
+                  <th footer></th>
+                  <th footer></th>
+                  <th footer></th>
+                  <th footer>
+                    {{
+                      formatCurrency(totalParcelasVincendas.valorPMTVincenda)
+                    }}
+                  </th>
+                  <th footer></th>
+                  <th footer>
+                    {{ formatCurrency(totalParcelasVincendas.totalDevedor) }}
+                  </th>
+                  <th footer></th>
+                  <th footer class="log-hidden-false"></th>
+                </tr>
+              </tfoot>
+            </table>
+            <div
+              class="d-flex justify-content-center"
+              *ngIf="tableLoading"
+              style="padding: 200px"
+            >
+              <div
+                class="spinner-grow text-primary"
+                style="width: 4rem; height: 4rem"
+                role="status"
+              >
+                <span class="sr-only">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="card-footer"
+            *ngIf="tableData.dataRows.length > 0 && !tableLoading"
+          >
+            <div class="row">
+              <div class="col-md-10">
+                <p>
+                  Subtotal Devedor em {{ subtotal_data_calculo || "---------" }}
+                </p>
+                <p>Amortização</p>
+                <p>Honorários {{ formDefaultValues.formHonorarios || 0 }}%</p>
+                <p>
+                  Multa sob contrato
+                  {{ formDefaultValues.formMultaSobContrato || 0 }}%
+                </p>
+                <p>
+                  TOTAL SALDO DEVEDOR EM {{ total_data_calculo || "---------" }}
+                </p>
+              </div>
+              <div class="col-md-2">
+                <p>{{ formatCurrency(total_subtotal || 0) }}</p>
+                <p>{{ formatCurrencyAmortizacao(amortizacaoGeral || 0) }}</p>
+                <p>{{ formatCurrency(total_honorarios || 0) }}</p>
+                <p>{{ formatCurrency(total_multa_sob_contrato || 0) }}</p>
+                <p>{{ formatCurrency(total_grandtotal || 0) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
